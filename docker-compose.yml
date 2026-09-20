@@ -10,3 +10,13 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      HOSTNAME: 0.0.0.0
+    networks:
+      - talarto_net
+
+networks:
+  talarto_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.252.240.0/24
