@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Bell, CalendarDays, ChevronDown, ClipboardList, Coffee, GalleryHorizontalEnd, Gauge, Menu, MessageCircle, Music2, Settings, UtensilsCrossed, X, Sparkles, BadgeDollarSign } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, CalendarDays, ChevronDown, ClipboardList, Coffee, GalleryHorizontalEnd, Gauge, Menu, MessageCircle, Music2, Settings, UtensilsCrossed, X, Sparkles, BadgeDollarSign, LogOut } from "lucide-react";
 import { useState } from "react";
 import BrandIcon from "./BrandIcon";
 import { todayJalali } from "@/lib/utils";
@@ -25,6 +25,12 @@ const nav = [
 export default function AdminShell({children}:{children:React.ReactNode}) {
   const [open,setOpen]=useState(false);
   const path=usePathname();
+  const router=useRouter();
+  const logout = async () => {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.replace("/admin-login");
+    router.refresh();
+  };
   const side = <div className="flex h-full flex-col bg-white">
     <div className="flex h-24 items-center border-b border-[#eee4d5] px-6">
       <Link href="/" className="flex items-center gap-2 text-[#b88334]"><BrandIcon className="h-11 w-11"/><div><b className="font-serif text-xl text-[#172238]">talarto</b><div className="text-[10px]">پنل مدیریت تالار</div></div></Link>
@@ -40,6 +46,9 @@ export default function AdminShell({children}:{children:React.ReactNode}) {
     <div className="m-4 rounded-3xl bg-[#172238] p-4 text-white">
       <div className="text-xs text-[#e5c48e]">هر مراسم</div><div className="mt-1 font-bold">یک داستان ماندگار...</div><div className="mt-4 h-px bg-white/10"/>
       <Link href="/" className="mt-3 block text-xs text-white/60 hover:text-white">مشاهده وب‌سایت ←</Link>
+      <button onClick={logout} className="mt-3 flex w-full items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-xs text-white/70 transition hover:bg-white/10 hover:text-white">
+        <LogOut size={15}/> خروج از پنل
+      </button>
     </div>
   </div>;
 
