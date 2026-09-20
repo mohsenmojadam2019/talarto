@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, CalendarDays, ChevronDown, ClipboardList, Coffee, GalleryHorizontalEnd, Gauge, Menu, MessageCircle, Music2, Settings, UtensilsCrossed, X, Sparkles } from "lucide-react";
+import { Bell, CalendarDays, ChevronDown, ClipboardList, Coffee, GalleryHorizontalEnd, Gauge, Menu, MessageCircle, Music2, Settings, UtensilsCrossed, X, Sparkles, BadgeDollarSign } from "lucide-react";
 import { useState } from "react";
 import BrandIcon from "./BrandIcon";
 import { todayJalali } from "@/lib/utils";
@@ -12,6 +12,7 @@ const nav = [
   ["/admin/quotes","استعلام‌ها و پیش‌فاکتورها",ClipboardList],
   ["/admin/bookings","رزروها",CalendarDays],
   ["/admin/calendar","تقویم مراسم",CalendarDays],
+  ["/admin/pricing","قوانین قیمت‌گذاری",BadgeDollarSign],
   ["/admin/food","منو و غذا",UtensilsCrossed],
   ["/admin/drinks","نوشیدنی‌ها",Coffee],
   ["/admin/music","موسیقی و DJ",Music2],

@@ -8,6 +8,7 @@ export type FoodPackage = {
   minGuests: number;
   badge?: string;
   items: string[];
+  includedAddonIds?: string[];
 };
 
 export type Addon = {
@@ -18,6 +19,16 @@ export type Addon = {
   mode: PriceMode;
   category: "drink" | "music" | "extra";
   includedIn?: string[];
+  active?: boolean;
+};
+
+export type DatePremiumRule = {
+  id: string;
+  title: string;
+  date?: string;
+  month?: number;
+  percent: number;
+  active: boolean;
 };
 
 export const venue = {
@@ -35,10 +46,11 @@ export const venue = {
 export const foodPackages: FoodPackage[] = [
   {
     id: "dish",
-    title: "دیس پرس کلاسیک",
+    title: "دیس‌پرس کلاسیک",
     subtitle: "پذیرایی رسمی و اقتصادی",
     pricePerPerson: 1200000,
     minGuests: 100,
+    includedAddonIds: ["soft"],
     items: ["چلو جوجه زعفرانی", "زرشک پلو با مرغ", "سالاد فصل", "ماست موسیر", "نوشیدنی پایه", "میوه و شیرینی"],
   },
   {
@@ -48,6 +60,7 @@ export const foodPackages: FoodPackage[] = [
     pricePerPerson: 1650000,
     minGuests: 150,
     badge: "پیشنهاد تالار",
+    includedAddonIds: ["soft"],
     items: ["چلو کباب کوبیده", "جوجه زعفرانی", "باقالی پلو با گوشت", "خورشت انتخابی", "دو نوع سالاد", "دسر", "میوه و شیرینی"],
   },
   {
@@ -57,22 +70,46 @@ export const foodPackages: FoodPackage[] = [
     pricePerPerson: 2350000,
     minGuests: 180,
     badge: "VIP",
+    includedAddonIds: ["soft", "hotbar", "dj"],
     items: ["شیشلیک", "کباب برگ", "جوجه مخصوص", "ماهی", "باقالی پلو با گوشت", "فینگرفود", "سالاد بار", "دسر بار", "میوه و شیرینی"],
   },
 ];
 
 export const addons: Addon[] = [
-  { id: "soft", title: "نوشیدنی کامل", description: "آب معدنی، نوشابه، دوغ و دلستر", price: 160000, mode: "perPerson", category: "drink" },
-  { id: "mocktail", title: "بار سرد و موکتل", description: "موکتل و آبمیوه طبیعی در بدو ورود", price: 230000, mode: "perPerson", category: "drink" },
-  { id: "hotbar", title: "بار گرم", description: "چای، نسکافه و قهوه", price: 180000, mode: "perPerson", category: "drink" },
-  { id: "dj", title: "DJ حرفه‌ای", description: "دیجی اختصاصی مراسم", price: 28000000, mode: "fixed", category: "music" },
-  { id: "djlight", title: "DJ + نورپردازی", description: "سیستم صوتی، رقص نور و اپراتور", price: 48000000, mode: "fixed", category: "music" },
-  { id: "live", title: "اجرای زنده", description: "بند موسیقی زنده مراسم", price: 95000000, mode: "fixed", category: "music" },
-  { id: "flowers", title: "گل‌آرایی ویژه", description: "گل‌آرایی ورودی، جایگاه و میزها", price: 45000000, mode: "fixed", category: "extra" },
-  { id: "coldfire", title: "آتش‌بازی سرد و مه", description: "ورودی عروس و داماد و زمان کیک", price: 18000000, mode: "fixed", category: "extra" },
-  { id: "photo", title: "عکاسی و فیلمبرداری", description: "تیم تصویربرداری و کلیپ مراسم", price: 65000000, mode: "fixed", category: "extra" },
-  { id: "viproom", title: "اتاق VIP عروس و داماد", description: "اتاق اختصاصی با پذیرایی ویژه", price: 12000000, mode: "fixed", category: "extra" },
+  { id: "soft", title: "نوشیدنی پایه", description: "آب معدنی، نوشابه، دوغ و دلستر", price: 160000, mode: "perPerson", category: "drink", active: true },
+  { id: "traditional", title: "شربت سنتی", description: "دو مدل شربت سنتی فصل برای پذیرایی", price: 95000, mode: "perPerson", category: "drink", active: true },
+  { id: "mocktail", title: "بار سرد و موکتل", description: "موکتل و آبمیوه طبیعی در بدو ورود", price: 230000, mode: "perPerson", category: "drink", active: true },
+  { id: "hotbar", title: "بار گرم", description: "چای، نسکافه و قهوه با باریستا", price: 180000, mode: "perPerson", category: "drink", active: true },
+  { id: "dj", title: "DJ حرفه‌ای", description: "دیجی اختصاصی مراسم با اجرای کامل", price: 28000000, mode: "fixed", category: "music", active: true },
+  { id: "djlight", title: "DJ + سیستم صوتی و نور", description: "سیستم صوتی، رقص نور و اپراتور", price: 48000000, mode: "fixed", category: "music", active: true },
+  { id: "ledfloor", title: "کف LED", description: "کف نورپردازی‌شده برای بخش رقص", price: 32000000, mode: "fixed", category: "music", active: true },
+  { id: "live", title: "اجرای زنده", description: "بند موسیقی زنده مراسم", price: 95000000, mode: "fixed", category: "music", active: true },
+  { id: "flowers", title: "گل‌آرایی ویژه", description: "گل‌آرایی ورودی، جایگاه و میزها", price: 45000000, mode: "fixed", category: "extra", active: true },
+  { id: "fingerfood", title: "فینگرفود ورودی", description: "پذیرایی فینگرفود در شروع مراسم", price: 210000, mode: "perPerson", category: "extra", active: true },
+  { id: "coldfire", title: "آتش‌بازی سرد و مه", description: "ورودی عروس و داماد و زمان کیک", price: 18000000, mode: "fixed", category: "extra", active: true },
+  { id: "sofreh", title: "سفره عقد", description: "سفره عقد کامل با چیدمان اختصاصی", price: 36000000, mode: "fixed", category: "extra", active: true },
+  { id: "photo", title: "عکاسی و فیلمبرداری", description: "تیم تصویربرداری و کلیپ مراسم", price: 65000000, mode: "fixed", category: "extra", active: true },
+  { id: "viproom", title: "اتاق VIP عروس و داماد", description: "اتاق اختصاصی با پذیرایی ویژه", price: 12000000, mode: "fixed", category: "extra", active: true },
+  { id: "valet", title: "پارکینگ VIP و Valet", description: "پارک خودرو و تحویل کلید با نیروی اختصاصی", price: 15000000, mode: "fixed", category: "extra", active: true },
 ];
+
+export const datePremiumRules: DatePremiumRule[] = [
+  { id: "sp-1405-07-29", title: "تاریخ ویژه مهر", date: "1405/7/29", percent: 12, active: true },
+  { id: "sp-1405-08-03", title: "تعطیلات مناسبتی", date: "1405/8/3", percent: 15, active: true },
+  { id: "high-season-7", title: "فصل پرتقاضا - مهر", month: 7, percent: 5, active: true },
+];
+
+export function getDatePremium(date: string) {
+  const normalized = date.split("/").map(Number);
+  const [year, month, day] = normalized;
+  const exact = datePremiumRules.find((rule) => {
+    if (!rule.active || !rule.date) return false;
+    const [ry, rm, rd] = rule.date.split("/").map(Number);
+    return ry === year && rm === month && rd === day;
+  });
+  if (exact) return exact;
+  return datePremiumRules.find((rule) => rule.active && !rule.date && rule.month === month);
+}
 
 export const gallery = [
   "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1400&q=85",
@@ -88,6 +125,7 @@ export const adminNav = [
   ["quotes", "استعلام‌ها و پیش‌فاکتورها"],
   ["bookings", "رزروها"],
   ["calendar", "تقویم مراسم"],
+  ["pricing", "قوانین قیمت‌گذاری"],
   ["food", "منو و غذا"],
   ["drinks", "نوشیدنی‌ها"],
   ["music", "موسیقی و DJ"],

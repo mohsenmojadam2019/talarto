@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { addons, foodPackages, formatPrice, recentQuotes } from "@/lib/data";
+import { addons, datePremiumRules, foodPackages, formatPrice, recentQuotes, venue } from "@/lib/data";
 import { toFaNumber } from "@/lib/utils";
 import { Check, ChevronLeft, Edit3, ImageIcon, Plus, Search, Trash2, X } from "lucide-react";
 import { Status } from "./AdminDashboard";
@@ -12,6 +12,7 @@ const names: Record<string,{title:string;desc:string;add:string}> = {
   quotes:{title:"استعلام‌ها و پیش‌فاکتورها",desc:"پیگیری درخواست‌های مشتری و وضعیت تبدیل به رزرو",add:"ثبت پیش‌فاکتور"},
   bookings:{title:"رزروها",desc:"مدیریت رزروهای قطعی، پیش‌پرداخت و قراردادها",add:"ثبت رزرو"},
   calendar:{title:"تقویم مراسم",desc:"نمایش تاریخ‌های آزاد، رزرو و مناسبت‌ها بر اساس تقویم جلالی",add:"ثبت تاریخ ویژه"},
+  pricing:{title:"قوانین قیمت‌گذاری",desc:"مدیریت ضریب تاریخ‌های خاص، فصل‌های پرتقا‌ضا، حق سرویس و تخفیف",add:"افزودن قانون قیمت"},
   food:{title:"منو و غذا",desc:"مدیریت دیس‌پرس، سلف، سلف VIP و قیمت نفری",add:"افزودن منو"},
   drinks:{title:"نوشیدنی‌ها",desc:"مدیریت بار سرد، نوشیدنی، چای و قهوه",add:"افزودن نوشیدنی"},
   music:{title:"موسیقی و DJ",desc:"تعریف دیجی، سیستم صوتی، نورپردازی و اجرای زنده",add:"افزودن سرویس موسیقی"},
@@ -22,6 +23,7 @@ const names: Record<string,{title:string;desc:string;add:string}> = {
 };
 
 function seed(section:string): Row[] {
+  if(section==="pricing") return datePremiumRules.map(x=>({id:x.id,title:x.title,subtitle:x.date?"تاریخ جلالی: "+x.date:"ماه جلالی: "+x.month,price:x.percent,mode:"درصد",active:x.active}));
   if(section==="food") return foodPackages.map(x=>({id:x.id,title:x.title,subtitle:x.subtitle,price:x.pricePerPerson,mode:"نفری",active:true}));
   if(section==="drinks") return addons.filter(x=>x.category==="drink").map(x=>({id:x.id,title:x.title,subtitle:x.description,price:x.price,mode:x.mode==="perPerson"?"نفری":"ثابت",active:true}));
   if(section==="music") return addons.filter(x=>x.category==="music").map(x=>({id:x.id,title:x.title,subtitle:x.description,price:x.price,mode:"ثابت",active:true}));
@@ -45,6 +47,7 @@ export default function AdminSection({section}:{section:string}) {
   const filtered=useMemo(()=>rows.filter(x=>(x.title+" "+(x.subtitle||"")).includes(q)),[rows,q]);
 
   if(section==="calendar") return <CalendarAdmin meta={meta}/>;
+  if(section==="pricing") return <PricingAdmin meta={meta}/>;
   if(section==="gallery") return <GalleryAdmin meta={meta}/>;
   if(section==="settings") return <SettingsAdmin meta={meta}/>;
 
@@ -77,6 +80,33 @@ export default function AdminSection({section}:{section:string}) {
       <div className="space-y-4"><label className="block text-xs text-slate-500">عنوان<input name="title" required defaultValue={edit?.title} className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-[#b88334]"/></label><label className="block text-xs text-slate-500">توضیحات<textarea name="subtitle" defaultValue={edit?.subtitle} rows={3} className="mt-2 w-full resize-none rounded-xl border border-slate-200 p-3 outline-none focus:border-[#b88334]"/></label><div className="grid grid-cols-2 gap-3"><label className="text-xs text-slate-500">قیمت<input name="price" type="number" defaultValue={edit?.price} className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-[#b88334]"/></label><label className="text-xs text-slate-500">نوع قیمت<select name="mode" defaultValue={edit?.mode||"ثابت"} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3"><option>ثابت</option><option>نفری</option><option>داخل پکیج</option></select></label></div></div>
       <div className="mt-6 flex justify-end gap-2"><button type="button" className="btn-outline" onClick={()=>setModal(false)}>انصراف</button><button className="btn-gold">ذخیره تغییرات</button></div>
     </form></div>}
+  </div>
+}
+
+function PricingAdmin({meta}:{meta:{title:string;desc:string;add:string}}) {
+  const [rules,setRules]=useState(()=>datePremiumRules);
+  const [service,setService]=useState(venue.servicePercent);
+  const [tax,setTax]=useState(venue.taxPercent);
+  const [saved,setSaved]=useState(false);
+  const toggle=(id:string)=>setRules(x=>x.map(r=>r.id===id?{...r,active:!r.active}:r));
+  return <div className="mx-auto max-w-[1200px]">
+    <div className="mb-5"><h1 className="text-2xl font-black">{meta.title}</h1><p className="mt-1 text-xs text-slate-500">{meta.desc}</p></div>
+    <div className="grid gap-4 xl:grid-cols-[1.2fr_.8fr]">
+      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-5 flex items-center justify-between"><div><h2 className="font-black">ضرایب تاریخ‌های جلالی</h2><p className="mt-1 text-[10px] text-slate-400">قانون دقیق تاریخ بر قانون ماه اولویت دارد.</p></div><button className="btn-gold"><Plus size={16}/>{meta.add}</button></div>
+        <div className="space-y-3">{rules.map(rule=><div key={rule.id} className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 sm:flex-row sm:items-center">
+          <div className="flex-1"><b className="text-sm">{rule.title}</b><div className="mt-1 text-[10px] text-slate-500">{rule.date?"تاریخ: "+rule.date:"ماه: "+toFaNumber(rule.month||0)}</div></div>
+          <div className="text-sm font-black text-[#9f6d29]">+{toFaNumber(rule.percent)}٪</div>
+          <button onClick={()=>toggle(rule.id)} className={(rule.active?"bg-green-100 text-green-700":"bg-slate-200 text-slate-500")+" rounded-full px-3 py-1.5 text-[10px] font-bold"}>{rule.active?"فعال":"غیرفعال"}</button>
+        </div>)}</div>
+      </section>
+      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="font-black">هزینه‌های عمومی فاکتور</h2><p className="mt-1 text-[10px] leading-6 text-slate-400">این اعداد روی جمع سالن، غذا، آپشن‌ها و ضریب تاریخ اعمال می‌شوند.</p>
+        <div className="mt-5 space-y-4"><label className="block text-xs text-slate-500">حق سرویس (%)<input type="number" value={service} onChange={e=>setService(Number(e.target.value)||0)} className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-[#b88334]"/></label><label className="block text-xs text-slate-500">مالیات (%)<input type="number" value={tax} onChange={e=>setTax(Number(e.target.value)||0)} className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-[#b88334]"/></label></div>
+        <div className="mt-5 rounded-2xl bg-[#fbf8f2] p-4 text-xs leading-7 text-slate-600"><b className="block text-[#172238]">جلوگیری از دوباره‌حسابی</b>هر سرویس می‌تواند داخل پکیج غذا قرار بگیرد؛ در این حالت در پیش‌فاکتور با برچسب «داخل پکیج» و هزینه صفر نمایش داده می‌شود.</div>
+        <div className="mt-5 flex items-center justify-end gap-3">{saved&&<span className="text-xs font-bold text-green-600">✓ ذخیره شد</span>}<button onClick={()=>{setSaved(true);setTimeout(()=>setSaved(false),1800)}} className="btn-gold">ذخیره قوانین</button></div>
+      </section>
+    </div>
   </div>
 }
 
