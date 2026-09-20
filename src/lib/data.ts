@@ -1,3 +1,5 @@
+import { gallerySeed } from "./seed";
+
 export type PriceMode = "fixed" | "perPerson" | "included";
 
 export type FoodPackage = {
@@ -111,14 +113,7 @@ export function getDatePremium(date: string) {
   return datePremiumRules.find((rule) => rule.active && !rule.date && rule.month === month);
 }
 
-export const gallery = [
-  "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1400&q=85",
-  "https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=1400&q=85",
-  "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85",
-  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=85",
-  "https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=1000&q=80",
-  "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1000&q=80",
-];
+export const gallery = gallerySeed.map((item) => item.src);
 
 export const adminNav = [
   ["dashboard", "داشبورد"],

@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import BrandIcon from "@/components/BrandIcon";
 import { gallery } from "@/lib/data";
+import { heroSeed } from "@/lib/seed";
 
 const serviceStrip = [
   [Gem, "سالن مجلل", "طراحی مدرن و لوکس"],
@@ -50,7 +51,7 @@ export default function HomePage() {
 
             <div className="order-1 relative lg:order-2">
               <div className="relative mx-auto aspect-[1.18/1] max-w-[690px] overflow-hidden rounded-[36px] border-[10px] border-white shadow-[0_30px_100px_rgba(23,34,56,.12)]">
-                <Image src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=88" alt="عروس و داماد در مراسم عروسی" fill priority className="object-cover" sizes="(max-width:1024px) 100vw, 58vw"/>
+                <Image src={heroSeed.src} alt={heroSeed.alt} fill priority className="object-cover" sizes="(max-width:1024px) 100vw, 58vw"/>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#172238]/35 via-transparent to-white/10" />
                 <div className="absolute bottom-5 right-5 flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 shadow-xl backdrop-blur">
                   <div className="text-[#b88334]"><BrandIcon className="h-10 w-10"/></div>

@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { addons, datePremiumRules, foodPackages, formatPrice, recentQuotes, venue } from "@/lib/data";
+import { gallerySeed } from "@/lib/seed";
 import { toFaNumber } from "@/lib/utils";
-import { Check, ChevronLeft, Edit3, ImageIcon, Plus, Search, Trash2, X } from "lucide-react";
+import { Check, ChevronLeft, Edit3, Plus, Search, Trash2, X } from "lucide-react";
 import { Status } from "./AdminDashboard";
 
 type Row = { id:string; title:string; subtitle?:string; price?:number; date?:string; guests?:number; status?:string; mode?:string; active?:boolean };
@@ -119,8 +121,23 @@ function CalendarAdmin({meta}:{meta:{title:string;desc:string;add:string}}) {
 }
 
 function GalleryAdmin({meta}:{meta:{title:string;desc:string;add:string}}) {
-  const [count,setCount]=useState(8);
-  return <div className="mx-auto max-w-[1500px]"><div className="mb-5 flex items-end justify-between"><div><h1 className="text-2xl font-black">{meta.title}</h1><p className="mt-1 text-xs text-slate-500">{meta.desc}</p></div><button onClick={()=>setCount(x=>x+1)} className="btn-gold"><Plus size={17}/>{meta.add}</button></div><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">{Array.from({length:count},(_,i)=><div key={i} className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[#fbf3e7] to-[#e9dcc7]"><ImageIcon className="absolute inset-0 m-auto text-[#b88334]" size={32}/><div className="absolute inset-x-2 bottom-2 flex justify-between rounded-xl bg-white/90 p-2 opacity-0 transition group-hover:opacity-100"><span className="text-[10px]">تصویر {toFaNumber(i+1)}</span><button onClick={()=>setCount(x=>Math.max(0,x-1))}><Trash2 size={14} className="text-red-500"/></button></div></div>)}</div></div>
+  const [items,setItems]=useState(()=>gallerySeed.map((item)=>({...item})));
+  const addSample=()=>{
+    const source=gallerySeed[items.length%gallerySeed.length];
+    setItems((prev)=>[...prev,{...source,id:source.id+"-"+Date.now(),title:source.title+" جدید"}]);
+  };
+  const remove=(id:string)=>setItems((prev)=>prev.filter((item)=>item.id!==id));
+  return <div className="mx-auto max-w-[1500px]">
+    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-2xl font-black">{meta.title}</h1><p className="mt-1 text-xs text-slate-500">{meta.desc}</p></div><button onClick={addSample} className="btn-gold"><Plus size={17}/>{meta.add}</button></div>
+    <div className="mb-4 rounded-2xl border border-green-100 bg-green-50 p-3 text-xs leading-6 text-green-800">گالری اولیه از Seed محلی بارگذاری شده و هیچ تصویر خارجی یا placeholder ندارد.</div>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">{items.map((item)=><div key={item.id} className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#f6f2eb]">
+      <Image src={item.src} alt={item.alt} fill className="object-cover transition duration-300 group-hover:scale-105" sizes="(max-width:640px) 50vw,20vw"/>
+      <div className="absolute inset-x-2 bottom-2 flex items-center justify-between gap-2 rounded-xl bg-white/92 p-2 shadow-lg backdrop-blur">
+        <span className="truncate text-[10px] font-bold">{item.title}</span>
+        <button onClick={()=>remove(item.id)} className="shrink-0 rounded-lg p-1.5 hover:bg-red-50"><Trash2 size={14} className="text-red-500"/></button>
+      </div>
+    </div>)}</div>
+  </div>
 }
 
 function SettingsAdmin({meta}:{meta:{title:string;desc:string;add:string}}) {
