@@ -1,9 +1,16 @@
 services:
   app:
     build: .
-    ports: ["8000:8000"]
-    volumes: [".:/app"]
+    container_name: talarto
+    ports:
+      - "8000:8000"
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
       DB_CONNECTION: sqlite
+    volumes:
+      - talarto_storage:/app/storage
+      - talarto_database:/app/database
+volumes:
+  talarto_storage:
+  talarto_database:

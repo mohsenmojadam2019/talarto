@@ -1,33 +1,36 @@
 # تالارتو
 
-بازطراحی کامل به Laravel 13 + PHP 8.4 + Blade، بدون Vite و Node.
+وب‌سایت اختصاصی یک مجموعه تالار و برگزاری مراسم؛ **نه مارکت‌پلیس و نه SaaS**.
+
+## Stack
+- Laravel 13
+- PHP 8.4
+- Blade خالص
+- CSS/JS بدون Vite و Node
+- SQLite در محیط توسعه
+- Morilog/Jalali برای تبدیل و اعتبارسنجی تاریخ شمسی
+- IRANSansX-Thin در `public/assets/fonts/IRANSansX-Thin.ttf`
 
 ## امکانات
-- RTL روشن و لوکس
-- جستجو بر اساس نوع، شهر، محله، ظرفیت، مراسم، بودجه و تخفیف
-- جزئیات مجموعه + گالری + امکانات + Schema.org EventVenue
-- مقایسه تا ۴ مجموعه
-- درخواست رزرو و ثبت لید
-- پنل مدیریت و CRUD مجموعه‌ها
-- تاریخ جلالی در پنل با morilog/jalali
-- سیدر ۱۰ مجموعه متنوع
+- صفحه اصلی لوکس و روشن RTL
+- صفحات عروسی، عقد، نامزدی، تولد، خصوصی و شرکتی
+- پکیج‌های مراسم و منوی پذیرایی
+- محاسبه‌گر هزینه تقریبی
+- تقویم شمسی گرافیکی و جلوگیری از انتخاب تاریخ مسدود/رزرو شده
+- درخواست رزرو و درخواست بازدید
+- گالری و Lightbox
+- نظرات مشتریان
+- مجله و SEO، Sitemap، robots و Schema.org EventVenue/FAQ
+- تماس، درباره ما و FAQ
+- پنل ادمین برای تنظیمات، رزروها، بازدیدها، تقویم، خدمات، پکیج، منو، گالری، مقاله، FAQ و پیام‌ها
 - Docker روی PHP 8.4
 
 ## اجرا
 ```bash
-composer install
-cp .env.example .env
-php artisan key:generate
-touch database/database.sqlite
-php artisan migrate --seed
-php artisan serve
+docker compose up --build -d
 ```
+سایت: `http://127.0.0.1:8000`
 
-## فونت IRANSansX
-CSS از این فایل استفاده می‌کند:
-`public/assets/fonts/IRANSansX-Thin.ttf`
-
-فایل مالک پروژه روی سیستم god قرار دارد:
-`/home/god/Documents/IranSansX(Pro)/iransansX family/IRANSansX-Thin.ttf`
-
-در زمان این commit، host محلی god در SentinelX به‌علت محدودیت یک host فعال در پلن Free پارک شده بود؛ بنابراین فایل باینری فونت از سیستم محلی قابل خواندن نبود و باید پس از فعال شدن god به مسیر بالا کپی شود.
+ورود پیش‌فرض ادمین (در `.env` حتماً تغییر دهید):
+- `ADMIN_EMAIL=admin@talarto.local`
+- `ADMIN_PASSWORD=change-me-now`

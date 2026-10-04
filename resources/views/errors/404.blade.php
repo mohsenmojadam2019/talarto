@@ -1,0 +1,1 @@
+@extends('layouts.app') @section('title','صفحه پیدا نشد') @section('content')<section class="empty-page"><div><b>404</b><h1>این صفحه پیدا نشد</h1><a class="btn" href="{{ route('home') }}">بازگشت به صفحه اصلی</a></div></section>@endsection
