@@ -13,6 +13,7 @@ Route::get('/services/{service:slug}', [PageController::class, 'service'])->name
 Route::get('/packages', [PageController::class, 'packages'])->name('packages');
 Route::get('/menu', [PageController::class, 'menu'])->name('menu');
 Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
+Route::get('/calculator', [PageController::class, 'calculator'])->name('calculator');
 Route::get('/reservation', [PageController::class, 'reservation'])->name('reservation');
 Route::post('/reservation', [LeadController::class, 'reservation'])->name('reservation.store')->middleware('throttle:8,1');
 Route::post('/visit-request', [LeadController::class, 'visit'])->name('visit.store')->middleware('throttle:8,1');
@@ -20,6 +21,8 @@ Route::get('/faq', [PageController::class, 'faq'])->name('faq');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [LeadController::class, 'contact'])->name('contact.store')->middleware('throttle:6,1');
 Route::post('/review', [LeadController::class, 'testimonial'])->name('review.store')->middleware('throttle:3,10');
+Route::get('/terms', [PageController::class, 'terms'])->name('terms');
+Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/blog', [PageController::class, 'blog'])->name('blog.index');
 Route::get('/blog/{post:slug}', [PageController::class, 'post'])->name('blog.show');
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
