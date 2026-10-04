@@ -14,6 +14,13 @@ class BookingController extends Controller
 
     public function store(Request $request, Venue $venue)
     {
+        $normalizedDate = strtr((string) $request->input('event_date_jalali'), [
+            '۰'=>'0','۱'=>'1','۲'=>'2','۳'=>'3','۴'=>'4','۵'=>'5','۶'=>'6','۷'=>'7','۸'=>'8','۹'=>'9',
+            '٠'=>'0','١'=>'1','٢'=>'2','٣'=>'3','٤'=>'4','٥'=>'5','٦'=>'6','٧'=>'7','٨'=>'8','٩'=>'9',
+            '-'=>'/','.'=>'/',
+        ]);
+        $request->merge(['event_date_jalali' => $normalizedDate]);
+
         $data = $request->validate([
             'name' => 'required|string|max:100',
             'mobile' => ['required','regex:/^09\d{9}$/'],
@@ -35,7 +42,10 @@ class BookingController extends Controller
         }
 
         unset($data['event_date_jalali']);
-        $venue->bookings()->create($data + ['event_date' => $eventDate->toDateString(), 'status' => 'new']);
+        $venue->bookings()->create($data + [
+            'event_date' => $eventDate->toDateString(),
+            'status' => 'new',
+        ]);
 
         return back()->with('success', 'درخواست شما ثبت شد.');
     }
