@@ -9,6 +9,12 @@ class PageController extends Controller {
  public function packages(){return view('pages.packages',['packages'=>Package::where('active',1)->orderByDesc('featured')->orderBy('sort_order')->get()]);}
  public function menu(){return view('pages.menu',['items'=>MenuItem::where('active',1)->orderBy('category')->orderBy('sort_order')->get()->groupBy('category')]);}
  public function gallery(){return view('pages.gallery',['items'=>GalleryItem::where('active',1)->orderBy('sort_order')->get()]);}
+ public function calendar(){
+  $blocked=CalendarDate::whereDate('date','>=',today())->whereIn('status',['booked','unavailable'])->pluck('date')->map(fn($d)=>JalaliDate::format($d));
+  $confirmed=Reservation::where('status','confirmed')->whereDate('event_date','>=',today())->pluck('event_date')->map(fn($d)=>JalaliDate::format($d));
+  $dates=CalendarDate::whereDate('date','>=',today())->orderBy('date')->take(180)->get();
+  return view('pages.calendar',['blockedDates'=>$blocked->merge($confirmed)->unique()->values(),'dates'=>$dates]);
+ }
  public function calculator(){return view('pages.calculator',['packages'=>Package::where('active',1)->orderByDesc('featured')->orderBy('sort_order')->get(),'menuItems'=>MenuItem::where('active',1)->orderBy('category')->orderBy('sort_order')->get()]);}
  public function reservation(){
   $blocked=CalendarDate::whereDate('date','>=',today())->whereIn('status',['booked','unavailable'])->pluck('date')->map(fn($d)=>JalaliDate::format($d));

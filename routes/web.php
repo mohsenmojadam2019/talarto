@@ -13,6 +13,7 @@ Route::get('/services/{service:slug}', [PageController::class, 'service'])->name
 Route::get('/packages', [PageController::class, 'packages'])->name('packages');
 Route::get('/menu', [PageController::class, 'menu'])->name('menu');
 Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
+Route::get('/calendar', [PageController::class, 'calendar'])->name('calendar');
 Route::get('/calculator', [PageController::class, 'calculator'])->name('calculator');
 Route::get('/reservation', [PageController::class, 'reservation'])->name('reservation');
 Route::post('/reservation', [LeadController::class, 'reservation'])->name('reservation.store')->middleware('throttle:8,1');

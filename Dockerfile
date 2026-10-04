@@ -4,6 +4,6 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
-RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs storage/app/public bootstrap/cache database && touch database/database.sqlite && cp .env.example .env && php artisan key:generate --force && php artisan migrate --seed --force && php artisan storage:link
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs storage/app/public bootstrap/cache database && touch database/database.sqlite && cp .env.example .env && php artisan key:generate --force && php artisan migrate --seed --force && php artisan storage:link && php artisan view:cache
 EXPOSE 8000
 CMD ["php","artisan","serve","--host=0.0.0.0","--port=8000"]
