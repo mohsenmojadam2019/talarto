@@ -1,28 +1,33 @@
-# talarto
+# تالارتو
 
-وب‌سایت اختصاصی یک تالار عروسی با رابط فارسی RTL، محاسبه‌گر هزینه مراسم و پنل مدیریت.
+بازطراحی کامل به Laravel 13 + PHP 8.4 + Blade، بدون Vite و Node.
 
 ## امکانات
-- صفحه اصلی لوکس روشن با هویت سفید/کرم/طلایی
-- گالری، خدمات، درباره ما و تماس
-- محاسبه هزینه مراسم بر اساس تاریخ جلالی و تعداد مهمان
-- منوی دیس‌پرس، سلف سرویس و VIP
-- نوشیدنی، DJ، موسیقی و خدمات جانبی به‌صورت Add-on
-- نمایش لحظه‌ای پیش‌فاکتور
-- پنل مدیریت فول ریسپانسیو
-- رزرو، استعلام، تقویم جلالی، غذا، نوشیدنی، موسیقی، خدمات، گالری و تنظیمات
-- Docker production-ready
+- RTL روشن و لوکس
+- جستجو بر اساس نوع، شهر، محله، ظرفیت، مراسم، بودجه و تخفیف
+- جزئیات مجموعه + گالری + امکانات + Schema.org EventVenue
+- مقایسه تا ۴ مجموعه
+- درخواست رزرو و ثبت لید
+- پنل مدیریت و CRUD مجموعه‌ها
+- تاریخ جلالی در پنل با morilog/jalali
+- سیدر ۱۰ مجموعه متنوع
+- Docker روی PHP 8.4
 
 ## اجرا
 ```bash
-npm install
-npm run dev
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate --seed
+php artisan serve
 ```
 
-## Docker
-```bash
-docker compose up --build -d
-```
+## فونت IRANSansX
+CSS از این فایل استفاده می‌کند:
+`public/assets/fonts/IRANSansX-Thin.ttf`
 
-سایت: http://localhost:3000
-پنل مدیریت: http://localhost:3000/admin
+فایل مالک پروژه روی سیستم god قرار دارد:
+`/home/god/Documents/IranSansX(Pro)/iransansX family/IRANSansX-Thin.ttf`
+
+در زمان این commit، host محلی god در SentinelX به‌علت محدودیت یک host فعال در پلن Free پارک شده بود؛ بنابراین فایل باینری فونت از سیستم محلی قابل خواندن نبود و باید پس از فعال شدن god به مسیر بالا کپی شود.

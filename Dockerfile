@@ -1,25 +1,10 @@
-FROM node:22-alpine AS deps
+FROM php:8.4-cli
+RUN apt-get update && apt-get install -y git unzip libzip-dev libsqlite3-dev && docker-php-ext-install pdo pdo_sqlite zip
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
-
-FROM node:22-alpine AS builder
-WORKDIR /app
-ENV NEXT_TELEMETRY_DISABLED=1
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
-
-FROM node:22-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-USER nextjs
-EXPOSE 3000
-CMD ["node","server.js"]
+RUN composer install --no-interaction --prefer-dist
+RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache database && touch database/database.sqlite
+RUN cp .env.example .env && php artisan key:generate --force && php artisan migrate --force --seed
+EXPOSE 8000
+CMD ["php","artisan","serve","--host=0.0.0.0","--port=8000"]

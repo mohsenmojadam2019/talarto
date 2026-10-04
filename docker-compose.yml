@@ -1,24 +1,9 @@
 services:
-  talarto:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: talarto
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env.local
+  app:
+    build: .
+    ports: ["8000:8000"]
+    volumes: [".:/app"]
     environment:
-      NODE_ENV: production
-      PORT: 3000
-      HOSTNAME: 0.0.0.0
-    networks:
-      - talarto_net
-
-networks:
-  talarto_net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.252.240.0/24
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: sqlite
