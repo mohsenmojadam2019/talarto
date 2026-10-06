@@ -1,9 +1,5 @@
 <?php
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LeadController;
-use App\Http\Controllers\PageController;
-use App\Http\Controllers\SeoController;
+use App\Http\Controllers\{AdminController,AuthController,CommerceAdminController,CustomerDashboardController,CustomerReservationController,HomeController,LeadController,PageController,PricePreviewController,SeoController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -15,8 +11,7 @@ Route::get('/menu', [PageController::class, 'menu'])->name('menu');
 Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
 Route::get('/calendar', [PageController::class, 'calendar'])->name('calendar');
 Route::get('/calculator', [PageController::class, 'calculator'])->name('calculator');
-Route::get('/reservation', [PageController::class, 'reservation'])->name('reservation');
-Route::post('/reservation', [LeadController::class, 'reservation'])->name('reservation.store')->middleware('throttle:8,1');
+Route::post('/reservation/request', [LeadController::class, 'reservation'])->name('reservation.legacy')->middleware('throttle:8,1');
 Route::post('/visit-request', [LeadController::class, 'visit'])->name('visit.store')->middleware('throttle:8,1');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
@@ -29,11 +24,44 @@ Route::get('/blog/{post:slug}', [PageController::class, 'post'])->name('blog.sho
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
 
+Route::middleware('guest')->group(function(){
+ Route::get('/login',[AuthController::class,'loginForm'])->name('login');
+ Route::post('/login',[AuthController::class,'login'])->name('login.store')->middleware('throttle:8,1');
+ Route::get('/register',[AuthController::class,'registerForm'])->name('register');
+ Route::post('/register',[AuthController::class,'register'])->name('register.store')->middleware('throttle:5,1');
+});
+Route::post('/logout',[AuthController::class,'logout'])->name('logout')->middleware('auth');
+
+Route::middleware('auth')->group(function(){
+ Route::get('/reservation',[CustomerReservationController::class,'create'])->name('reservation');
+ Route::prefix('account')->name('account.')->group(function(){
+  Route::get('/',[CustomerDashboardController::class,'index'])->name('dashboard');
+  Route::get('/reservations',[CustomerReservationController::class,'index'])->name('reservations.index');
+  Route::get('/reservations/create',[CustomerReservationController::class,'create'])->name('reservations.create');
+  Route::post('/reservations',[CustomerReservationController::class,'store'])->name('reservations.store');
+  Route::get('/reservations/{reservation}',[CustomerReservationController::class,'show'])->name('reservations.show');
+  Route::get('/reservations/{reservation}/edit',[CustomerReservationController::class,'edit'])->name('reservations.edit');
+  Route::put('/reservations/{reservation}',[CustomerReservationController::class,'update'])->name('reservations.update');
+  Route::post('/reservations/{reservation}/accept-quote',[CustomerReservationController::class,'acceptQuote'])->name('reservations.accept-quote');
+  Route::post('/reservations/{reservation}/cancel',[CustomerReservationController::class,'cancel'])->name('reservations.cancel');
+  Route::post('/price-preview',PricePreviewController::class)->name('price-preview')->middleware('throttle:30,1');
+ });
+});
+
 Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate')->middleware('throttle:5,1');
 Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+    Route::get('/commerce',[CommerceAdminController::class,'index'])->name('commerce');
+    Route::post('/commerce/addons',[CommerceAdminController::class,'storeAddon'])->name('commerce.addons.store');
+    Route::put('/commerce/addons/{addon}',[CommerceAdminController::class,'updateAddon'])->name('commerce.addons.update');
+    Route::delete('/commerce/addons/{addon}',[CommerceAdminController::class,'deleteAddon'])->name('commerce.addons.delete');
+    Route::post('/commerce/rules',[CommerceAdminController::class,'storeRule'])->name('commerce.rules.store');
+    Route::put('/commerce/rules/{pricingRule}',[CommerceAdminController::class,'updateRule'])->name('commerce.rules.update');
+    Route::delete('/commerce/rules/{pricingRule}',[CommerceAdminController::class,'deleteRule'])->name('commerce.rules.delete');
+    Route::post('/commerce/reservations/{reservation}/payments',[CommerceAdminController::class,'storePayment'])->name('commerce.payments.store');
+    Route::post('/commerce/reservations/{reservation}/confirm',[CommerceAdminController::class,'confirm'])->name('commerce.reservations.confirm');
     Route::put('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('/services', [AdminController::class, 'storeService'])->name('services.store');
     Route::put('/services/{service}', [AdminController::class, 'updateService'])->name('services.update');
@@ -54,7 +82,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::delete('/faqs/{faq}', [AdminController::class, 'deleteFaq'])->name('faqs.delete');
     Route::post('/calendar', [AdminController::class, 'storeCalendar'])->name('calendar.store');
     Route::delete('/calendar/{calendarDate}', [AdminController::class, 'deleteCalendar'])->name('calendar.delete');
-    Route::patch('/reservations/{reservation}', [AdminController::class, 'reservationStatus'])->name('reservations.status');
+    Route::patch('/reservations/{reservation}', [CommerceAdminController::class, 'status'])->name('reservations.status');
     Route::patch('/visits/{visitRequest}', [AdminController::class, 'visitStatus'])->name('visits.status');
     Route::patch('/contacts/{contactMessage}', [AdminController::class, 'contactStatus'])->name('contacts.status');
     Route::patch('/testimonials/{testimonial}', [AdminController::class, 'testimonialStatus'])->name('testimonials.status');

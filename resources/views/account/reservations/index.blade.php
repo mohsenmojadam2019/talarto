@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('title','رزروهای من | تالارتو')
+@section('content')
+<section class="account-head"><div class="container"><div><span class="eyebrow">مراسم‌های من</span><h1>رزروها</h1></div><a class="btn" href="{{ route('account.reservations.create') }}">+ مراسم جدید</a></div></section>
+<section class="section"><div class="container reservations-list">@forelse($reservations as $r)<a class="reservation-card" href="{{ route('account.reservations.show',$r) }}"><div><span class="status-pill status-{{ $r->status }}">{{ ['new'=>'در انتظار بررسی','contacted'=>'پیگیری شده','confirmed'=>'قطعی','cancelled'=>'لغو','done'=>'انجام شده'][$r->status]??$r->status }}</span><h2>{{ $r->event_type }}</h2><p>{{ $r->date_jalali }} · سانس {{ $r->time_slot==='day'?'روز':'شب' }}</p></div><div class="reservation-card-meta"><span>{{ number_format($r->guest_count) }} مهمان</span><b>{{ number_format($r->final_price) }} تومان</b><small>{{ $r->tracking_code }}</small></div></a>@empty<div class="empty-state"><h2>رزروی ندارید</h2><a class="btn" href="{{ route('account.reservations.create') }}">ساخت مراسم</a></div>@endforelse<div class="pagination">{{ $reservations->links() }}</div></div></section>
+@endsection

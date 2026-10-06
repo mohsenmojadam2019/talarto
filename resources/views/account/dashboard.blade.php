@@ -1,0 +1,13 @@
+@extends('layouts.app')
+@section('title','پنل من | تالارتو')
+@section('content')
+<section class="account-head"><div class="container"><div><span class="eyebrow">پنل مشتری</span><h1>سلام {{ auth()->user()->name }}</h1><p>رزروها، پیش‌فاکتورها و پرداخت‌های مراسم را از اینجا مدیریت کنید.</p></div><a class="btn" href="{{ route('account.reservations.create') }}">+ مراسم جدید</a></div></section>
+<section class="section account-area"><div class="container">
+@if($active)
+<div class="active-event"><div class="active-event-main"><span class="status-pill status-{{ $active->status }}">{{ ['new'=>'در انتظار بررسی','contacted'=>'تماس گرفته شد','confirmed'=>'رزرو قطعی','cancelled'=>'لغو شده','done'=>'برگزار شده'][$active->status]??$active->status }}</span><h2>{{ $active->event_type }} · {{ $active->date_jalali }}</h2><p>{{ number_format($active->guest_count) }} مهمان · سانس {{ $active->time_slot==='day'?'روز':'شب' }} · کد {{ $active->tracking_code }}</p><a href="{{ route('account.reservations.show',$active) }}">مشاهده جزئیات ←</a></div><div class="money-stack"><span>مبلغ فعلی</span><b>{{ number_format($active->final_price) }}</b><small>تومان</small><div><span>پرداخت {{ number_format($active->paid_amount) }}</span><span>مانده {{ number_format($active->balance) }}</span></div></div></div>
+@else
+<div class="empty-state"><div>✦</div><h2>هنوز مراسمی ثبت نکرده‌اید</h2><p>تاریخ و جزئیات را وارد کنید تا هزینه واقعی همان انتخاب‌ها محاسبه شود.</p><a class="btn" href="{{ route('account.reservations.create') }}">ساخت اولین مراسم</a></div>
+@endif
+<div class="account-grid"><div class="panel-card"><div class="panel-title"><div><span class="eyebrow">رزروها</span><h2>آخرین مراسم‌ها</h2></div><a href="{{ route('account.reservations.index') }}">همه رزروها</a></div>@forelse($reservations->take(5) as $r)<a class="reservation-row" href="{{ route('account.reservations.show',$r) }}"><div><b>{{ $r->event_type }}</b><span>{{ $r->date_jalali }} · {{ number_format($r->guest_count) }} مهمان</span></div><div><strong>{{ number_format($r->final_price) }}</strong><small>تومان</small></div></a>@empty<p class="muted">رزروی وجود ندارد.</p>@endforelse</div><div class="panel-card quick-guide"><span class="eyebrow">مسیر رزرو</span><h2>از انتخاب تا مراسم</h2><ol><li class="done">ثبت تاریخ و خدمات</li><li>بررسی مجموعه و تأیید پیش‌فاکتور</li><li>ثبت بیعانه و قطعی شدن تاریخ</li><li>تکمیل پرداخت و برگزاری</li></ol></div></div>
+</div></section>
+@endsection
