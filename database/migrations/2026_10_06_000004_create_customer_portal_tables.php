@@ -123,11 +123,11 @@ return new class extends Migration {
         });
         $now=now();
         DB::table('addons')->insert([
-            ['category'=>'دکور و دیزاین','title'=>'گل‌آرایی VIP','description'=>'ارتقای گل‌آرایی جایگاه و میزهای اصلی.','pricing_type'=>'fixed','unit_price'=>18000000,'min_quantity'=>1,'active'=>1,'sort_order'=>10,'created_at'=>$now,'updated_at'=>$now],
-            ['category'=>'دکور و دیزاین','title'=>'استیج ویژه','description'=>'استیج اختصاصی متناسب با تم مراسم.','pricing_type'=>'fixed','unit_price'=>12000000,'min_quantity'=>1,'active'=>1,'sort_order'=>20,'created_at'=>$now,'updated_at'=>$now],
-            ['category'=>'نور و صدا','title'=>'نورپردازی تکمیلی','description'=>'نورپردازی دکوراتیو و افکت‌های تکمیلی سالن.','pricing_type'=>'fixed','unit_price'=>15000000,'min_quantity'=>1,'active'=>1,'sort_order'=>30,'created_at'=>$now,'updated_at'=>$now],
-            ['category'=>'پذیرایی','title'=>'پکیج میوه و شیرینی ویژه','description'=>'ارتقای پذیرایی برای هر مهمان.','pricing_type'=>'per_guest','unit_price'=>180000,'min_quantity'=>1,'active'=>1,'sort_order'=>40,'created_at'=>$now,'updated_at'=>$now],
-            ['category'=>'مراسم','title'=>'سفره عقد تشریفاتی','description'=>'سفره عقد کامل با چیدمان ویژه.','pricing_type'=>'fixed','unit_price'=>20000000,'min_quantity'=>1,'active'=>1,'sort_order'=>50,'created_at'=>$now,'updated_at'=>$now],
+            ['category'=>'دکور و دیزاین','title'=>'گل‌آرایی VIP','description'=>'ارتقای گل‌آرایی جایگاه و میزهای اصلی.','pricing_type'=>'fixed','unit_price'=>18000000,'min_quantity'=>1,'max_quantity'=>null,'active'=>1,'sort_order'=>10,'created_at'=>$now,'updated_at'=>$now],
+            ['category'=>'دکور و دیزاین','title'=>'استیج ویژه','description'=>'استیج اختصاصی متناسب با تم مراسم.','pricing_type'=>'fixed','unit_price'=>12000000,'min_quantity'=>1,'max_quantity'=>null,'active'=>1,'sort_order'=>20,'created_at'=>$now,'updated_at'=>$now],
+            ['category'=>'نور و صدا','title'=>'نورپردازی تکمیلی','description'=>'نورپردازی دکوراتیو و افکت‌های تکمیلی سالن.','pricing_type'=>'fixed','unit_price'=>15000000,'min_quantity'=>1,'max_quantity'=>null,'active'=>1,'sort_order'=>30,'created_at'=>$now,'updated_at'=>$now],
+            ['category'=>'پذیرایی','title'=>'پکیج میوه و شیرینی ویژه','description'=>'ارتقای پذیرایی برای هر مهمان.','pricing_type'=>'per_guest','unit_price'=>180000,'min_quantity'=>1,'max_quantity'=>null,'active'=>1,'sort_order'=>40,'created_at'=>$now,'updated_at'=>$now],
+            ['category'=>'مراسم','title'=>'سفره عقد تشریفاتی','description'=>'سفره عقد کامل با چیدمان ویژه.','pricing_type'=>'fixed','unit_price'=>20000000,'min_quantity'=>1,'max_quantity'=>null,'active'=>1,'sort_order'=>50,'created_at'=>$now,'updated_at'=>$now],
             ['category'=>'مراسم','title'=>'ساعت اضافه مراسم','description'=>'تمدید زمان اجرای مراسم.','pricing_type'=>'per_hour','unit_price'=>8000000,'min_quantity'=>1,'max_quantity'=>4,'active'=>1,'sort_order'=>60,'created_at'=>$now,'updated_at'=>$now],
         ]);
         DB::table('pricing_rules')->insert([
