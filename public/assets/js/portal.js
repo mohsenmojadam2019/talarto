@@ -1,6 +1,8 @@
 (()=>{
  const form=document.querySelector('[data-price-form]'); if(!form)return;
  const state=document.querySelector('[data-price-state]'),box=document.querySelector('[data-price-breakdown]'),total=document.querySelector('[data-price-total]');
+ const syncAddon=id=>{const toggle=form.querySelector('[data-addon-toggle="'+id+'"]'),qty=form.querySelector('[data-addon-qty="'+id+'"]');if(qty)qty.disabled=!toggle?.checked};
+ form.querySelectorAll('[data-addon-toggle]').forEach(toggle=>{syncAddon(toggle.dataset.addonToggle);toggle.addEventListener('change',()=>{syncAddon(toggle.dataset.addonToggle);schedule()})});
  const money=n=>new Intl.NumberFormat('fa-IR').format(Math.abs(Number(n||0)));
  let timer,controller;
  async function preview(){

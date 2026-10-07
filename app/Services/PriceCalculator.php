@@ -52,11 +52,10 @@ class PriceCalculator {
  }
  private function addonTotal(string $type,int $unit,float $qty,int $guests):array{
   return match($type){
-   'per_guest'=>[$guests*$qty,(int)round($unit*$guests*$qty)],
-   'per_table'=>[ceil($guests/10)*$qty,(int)round($unit*ceil($guests/10)*$qty)],
-   'per_hour','quantity'=>[$qty,(int)round($unit*$qty)],
-   'included'=>[$qty,0],
-   default=>[$qty,(int)round($unit*$qty)],
+   'per_guest'=>[$guests,(int)round($unit*$guests)],
+   'per_table','per_hour','quantity'=>[$qty,(int)round($unit*$qty)],
+   'included'=>[1,0],
+   default=>[1,$unit],
   };
  }
  private function line(string $type,$id,string $title,string $pricingType,$qty,int $unit,int $total,array $meta=[]):array{return ['item_type'=>$type,'item_id'=>$id,'title_snapshot'=>$title,'pricing_type'=>$pricingType,'quantity'=>$qty,'unit_price'=>$unit,'total_price'=>$total,'metadata'=>$meta];}
