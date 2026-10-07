@@ -6,6 +6,7 @@ use Illuminate\Support\Carbon;
 use Tests\TestCase;
 class CustomerReservationTest extends TestCase {
  public function test_server_side_price_engine_calculates_package_menu_addons_and_rules():void{
+  PricingRule::query()->delete();
   $package=Package::create(['title'=>'تست','slug'=>'test','base_price'=>1000000,'per_guest_price'=>100000,'min_guests'=>50,'active'=>1]);
   $menu=MenuItem::create(['category'=>'غذا','title'=>'منو','price_per_guest'=>20000,'active'=>1]);
   $fixed=Addon::create(['category'=>'دکور','title'=>'دکور','pricing_type'=>'fixed','unit_price'=>500000,'min_quantity'=>1,'active'=>1]);
