@@ -2,6 +2,12 @@
 
 Single-venue ceremony booking website built with Laravel 13 / PHP 8.4 and Persian RTL Blade UI. **No SaaS and no marketplace features.**
 
+## UI design references
+
+- [Talarto visual design documentation](docs/design-references-2026.md)
+- [Admin dashboard reference (high-resolution PNG)](docs/screenshots/admin-dashboard-design-2026.png)
+
+
 ## Local run on god
 
 ```bash
