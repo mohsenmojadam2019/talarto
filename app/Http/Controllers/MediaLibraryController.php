@@ -28,7 +28,7 @@ class MediaLibraryController extends Controller {
         foreach($request->file('images') as $image) {
             $url=UploadImage::store($image,'gallery');
             if(!$url) continue;
-            $this->register($url,$data['category'],$data['title']?:pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME),
+            $this->register($url,$data['category'],($data['title']??null)?:pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME),
                 'uploaded', (int)$image->getSize(), @getimagesize($image->getRealPath()) ?: null, $request->boolean('is_active',true));
             $n++;
         }
@@ -96,7 +96,7 @@ class MediaLibraryController extends Controller {
                     $url=Storage::url($path);
                     $metadata=$manifest[basename($filename)]??[];
                     $newMedia=$this->register($url,$metadata['category']??$category,
-                        $metadata['title'] ?: pathinfo(basename($filename),PATHINFO_FILENAME),
+                        ($metadata['title']??null) ?: pathinfo(basename($filename),PATHINFO_FILENAME),
                         'concept_visual',strlen($contents),@getimagesize($temp) ?: null,true);
                     $newMediaIds[]=$newMedia->id;
                     $count++;
