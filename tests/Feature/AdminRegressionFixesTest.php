@@ -90,7 +90,7 @@ class AdminRegressionFixesTest extends TestCase
         Storage::fake('public');
         $file = tempnam(sys_get_temp_dir(), 'talarto-zip-');
         $zip = new ZipArchive();
-        $this->assertTrue($zip->open($file, ZipArchive::OVERWRITE) === true);
+        $this->assertTrue($zip->open($file, (ZipArchive::CREATE | ZipArchive::OVERWRITE)) === true);
         $zip->addFile(public_path('assets/venue/favicon.png'), 'photo.png');
         $zip->close();
         try {
