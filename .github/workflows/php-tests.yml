@@ -1,0 +1,44 @@
+name: PHP and admin regression tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_sqlite, sqlite3, zip, fileinfo, gd, dom
+          coverage: none
+          tools: composer:v2
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Syntax-check changed PHP
+        run: |
+          php -l app/Http/Controllers/AdminController.php
+          php -l app/Http/Controllers/CommerceAdminController.php
+          php -l app/Http/Controllers/MediaLibraryController.php
+          php -l app/Http/Middleware/AdminPanelRedirectMiddleware.php
+          php -l bootstrap/app.php
+          php -l routes/web.php
+      - name: Check JavaScript
+        run: node --check public/assets/js/app.js
+      - name: Compile Blade templates
+        run: php artisan view:cache
+        env:
+          APP_ENV: testing
+          APP_KEY: base64:zNr1nSBiJckLPDZvvLFdk8FBWpni/krEvUKyrrg5Srw=
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+      - name: Run unit and feature tests
+        run: vendor/bin/phpunit --colors=never
