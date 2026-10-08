@@ -1,5 +1,5 @@
 <?php
-use App\Http\Controllers\{AdminController,MediaLibraryController,AuthController,AvailabilityController,CommerceAdminController,CustomerDashboardController,CustomerReservationController,HomeController,LeadController,PageController,PricePreviewController,SeoController};
+use App\Http\Controllers\{AdminController,MediaLibraryController,AuthController,AvailabilityController,CommerceAdminController,CustomerDashboardController,CustomerProfileController,CustomerReservationController,HomeController,LeadController,PageController,PricePreviewController,SeoController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -38,6 +38,9 @@ Route::middleware('auth')->group(function(){
  Route::get('/reservation',[CustomerReservationController::class,'create'])->name('reservation');
  Route::prefix('account')->name('account.')->group(function(){
   Route::get('/',[CustomerDashboardController::class,'index'])->name('dashboard');
+  Route::get('/profile',[CustomerProfileController::class,'edit'])->name('profile');
+  Route::patch('/profile',[CustomerProfileController::class,'update'])->name('profile.update');
+  Route::put('/profile/password',[CustomerProfileController::class,'password'])->name('profile.password');
   Route::get('/reservations',[CustomerReservationController::class,'index'])->name('reservations.index');
   Route::get('/reservations/create',[CustomerReservationController::class,'create'])->name('reservations.create');
   Route::post('/reservations',[CustomerReservationController::class,'store'])->name('reservations.store');
