@@ -20,6 +20,8 @@ if [ -z "${APP_KEY:-}" ]; then
     export APP_KEY
 fi
 
+mkdir -p /app/database/migrations
+cp -a /app/migration-source/. /app/database/migrations/
 php artisan migrate --force
 if [ "${SEED_DEMO:-false}" = "true" ]; then
     php artisan talarto:seed-demo-if-empty

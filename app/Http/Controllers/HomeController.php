@@ -9,7 +9,7 @@ class HomeController extends Controller {
    'services'=>CeremonyService::where('active',1)->orderBy('sort_order')->take(6)->get(),
    'packages'=>Package::where('active',1)->orderByDesc('featured')->orderBy('sort_order')->get(),
    'menuItems'=>MenuItem::where('active',1)->orderBy('category')->orderBy('sort_order')->get(),
-   'gallery'=>GalleryItem::where('active',1)->orderBy('sort_order')->take(8)->get(),
+   'gallery'=>GalleryItem::where('active',1)->orderBy('sort_order')->take(10)->get(),
    'testimonials'=>Testimonial::where('status','approved')->latest()->take(6)->get(),
    'posts'=>Post::whereNotNull('published_at')->latest('published_at')->take(3)->get(),
    'blockedDates'=>$blocked->unique()->values(),

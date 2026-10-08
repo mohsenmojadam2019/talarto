@@ -5,6 +5,7 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 COPY . .
+RUN mkdir -p /app/migration-source && cp -a database/migrations/. /app/migration-source/
 RUN composer dump-autoload --optimize && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs storage/app/public bootstrap/cache database && chmod +x docker/entrypoint.sh
 EXPOSE 8000
 ENTRYPOINT ["docker/entrypoint.sh"]
