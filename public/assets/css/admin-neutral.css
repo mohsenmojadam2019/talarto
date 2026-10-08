@@ -324,3 +324,17 @@ body.admin-login .password-visibility{background:#f0f2f5;color:#475360}
     padding:10px 6px;
   }
 }
+
+/* Admin searches and responsive server-side reservation pagination */
+.mw-admin .mw-admin-filterbar{display:flex;align-items:end;flex-wrap:wrap;gap:12px;padding:14px 0 17px}
+.mw-admin .mw-admin-filterbar label{display:flex;flex-direction:column;gap:5px;min-width:180px;flex:1;color:#505a66;font-size:12px;font-weight:750}
+.mw-admin .mw-admin-filterbar :is(input,select){min-height:42px;margin:0;padding:10px}
+.mw-admin .mw-admin-filterbar button{min-height:42px;border:1px solid #343d49;border-radius:10px;padding:9px 16px;background:#343d49;color:#fff;font-weight:750;cursor:pointer}
+.mw-admin .mw-admin-filterbar a{display:inline-flex;align-items:center;min-height:42px;color:#485361;text-decoration:none}
+.mw-admin .mw-admin-filterbar small{color:#6e7680;margin-inline-start:auto}
+.mw-admin .mw-admin-pages{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;padding:20px 9px}
+.mw-admin .mw-admin-pages :is(a,span,strong){display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:9px 14px;border:1px solid #dde2e8;border-radius:9px;background:#fff;color:#3e4753;text-decoration:none;font-size:12px}
+.mw-admin .mw-admin-pages span[aria-disabled=true]{background:#f1f3f5;color:#9199a3}
+.mw-admin .mw-admin-pages a:hover{background:#ebeff2}
+.mw-admin .mw-admin-pages strong{background:#e9edf1}
+@media(max-width:640px){.mw-admin .mw-admin-filterbar label{flex-basis:100%;min-width:0}.mw-admin .mw-admin-pages{gap:5px}.mw-admin .mw-admin-pages :is(a,span,strong){padding:8px}}
