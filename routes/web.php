@@ -1,5 +1,5 @@
 <?php
-use App\Http\Controllers\{AdminController,AuthController,AvailabilityController,CommerceAdminController,CustomerDashboardController,CustomerReservationController,HomeController,LeadController,PageController,PricePreviewController,SeoController};
+use App\Http\Controllers\{AdminController,MediaLibraryController,AuthController,AvailabilityController,CommerceAdminController,CustomerDashboardController,CustomerReservationController,HomeController,LeadController,PageController,PricePreviewController,SeoController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -75,6 +75,12 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/menu-items', [AdminController::class, 'storeMenu'])->name('menu.store');
     Route::put('/menu-items/{menuItem}', [AdminController::class, 'updateMenu'])->name('menu.update');
     Route::delete('/menu-items/{menuItem}', [AdminController::class, 'deleteMenu'])->name('menu.delete');
+    Route::post('/media', [MediaLibraryController::class, 'store'])->name('media.store');
+    Route::post('/media/import', [MediaLibraryController::class, 'importZip'])->name('media.import');
+    Route::patch('/media/{mediaAsset}', [MediaLibraryController::class, 'update'])->name('media.update');
+    Route::post('/media/{mediaAsset}/hero', [MediaLibraryController::class, 'setHero'])->name('media.hero');
+    Route::post('/media/{mediaAsset}/about', [MediaLibraryController::class, 'setAbout'])->name('media.about');
+    Route::delete('/media/{mediaAsset}', [MediaLibraryController::class, 'destroy'])->name('media.delete');
     Route::post('/gallery', [AdminController::class, 'storeGallery'])->name('gallery.store');
     Route::delete('/gallery/{galleryItem}', [AdminController::class, 'deleteGallery'])->name('gallery.delete');
     Route::post('/posts', [AdminController::class, 'storePost'])->name('posts.store');

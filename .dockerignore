@@ -8,3 +8,6 @@ qa-screens
 .phpunit.result.cache
 tests
 storage/logs/*
+
+/storage
+/bootstrap/cache
