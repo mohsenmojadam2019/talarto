@@ -9,11 +9,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class CommerceAdminController extends Controller {
- public function index(){
+ public function index(Request $r){
+  $query=Reservation::with(['user','package','latestQuote'])->latest();
+  if($r->filled('q')){
+   $search=mb_substr(trim((string)$r->input('q')),0,100);
+   $query->where(function($builder)use($search){
+    $builder->where('name','like','%'.$search.'%')->orWhere('mobile','like','%'.$search.'%')->orWhere('tracking_code','like','%'.$search.'%');
+   });
+  }
+  if(in_array($r->input('status'),['new','contacted','confirmed','cancelled','done'],true))$query->where('status',$r->input('status'));
   return view('admin.commerce',[
    'addons'=>Addon::orderBy('category')->orderBy('sort_order')->get(),
    'rules'=>PricingRule::with('package')->orderBy('priority')->get(),
-   'reservations'=>Reservation::with(['user','package','latestQuote'])->latest()->paginate(30),
+   'reservations'=>$query->paginate(30)->withQueryString(),
    'payments'=>Payment::with('reservation')->latest()->take(50)->get(),
    'packages'=>Package::where('active',1)->orderBy('sort_order')->get(),
   ]);
@@ -54,7 +62,7 @@ class CommerceAdminController extends Controller {
    DB::transaction(function()use($r,$reservation,$d) {
     $res=Reservation::whereKey($reservation->id)->lockForUpdate()->firstOrFail();
     if(!in_array($res->status,['new','contacted','confirmed'],true))$this->reject('برای رزرو لغوشده یا تمام‌شده نمی‌توان پرداخت ثبت کرد.');
-    if(!$res->quotes()->where('status','accepted')->exists())$this->reject('ابتدا مشتری باید پیش‌فاکتور فعلی را تأیید کند.');
+    if($res->latestQuote?->status!=='accepted')$this->reject('ابتدا مشتری باید پیش‌فاکتور فعلی را تأیید کند.');
     $paid=(int)$res->payments()->where('status','paid')->sum('amount');
     if((int)$d['amount']>(int)$res->final_price-$paid)$this->reject('مبلغ پرداخت از مانده قرارداد بیشتر است.');
     if(!empty($d['reference'])&&Payment::where('method',$d['method'])->where('reference',$d['reference'])->exists())$this->reject('این شماره پیگیری قبلاً ثبت شده است.');
