@@ -3,6 +3,23 @@
  const mt=$('[data-menu-toggle]'), menu=$('[data-menu]'); if(mt&&menu)mt.addEventListener('click',()=>menu.classList.toggle('open'));
  const calc=$('[data-calculator]'); if(calc){const run=()=>{const o=$('[data-package]',calc).selectedOptions[0],g=Math.max(0,Number($('[data-guests]',calc).value||0)),m=Number($('[data-menu]',calc).value||0),base=Number(o.dataset.base||0),per=Number(o.dataset.per||0),total=base+(per*g)+(m*g);$('[data-calc-result]').textContent=total?new Intl.NumberFormat('fa-IR').format(total):'—'};calc.addEventListener('input',run);run();}
  const modal=$('[data-gallery-modal]'); if(modal){$$('[data-gallery-src]').forEach(b=>b.addEventListener('click',()=>{modal.querySelector('img').src=b.dataset.gallerySrc;modal.classList.add('open')}));$('[data-gallery-close]',modal)?.addEventListener('click',()=>modal.classList.remove('open'));modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});}
+ const adminRoot=$('.mw-admin');
+ if(adminRoot){
+  const labels={category:'دسته‌بندی',title:'عنوان',slug:'شناسه صفحه',status:'وضعیت',sort_order:'ترتیب نمایش',
+   image_url:'آدرس تصویر',image_file:'فایل تصویر',amount:'مبلغ',method:'روش پرداخت',reference:'شناسه پیگیری',
+   event_type:'نوع مراسم',priority:'اولویت',unit_price:'قیمت واحد',min_quantity:'حداقل تعداد',max_quantity:'حداکثر تعداد',
+   pricing_type:'روش قیمت‌گذاری',rule_type:'نوع قانون',direction:'جهت تغییر قیمت',package_id:'پکیج',
+   time_slot:'سانس',admin_note:'یادداشت مدیریت',name:'نام',mobile:'موبایل',q:'جستجو'};
+  $('input:not([type=hidden]):not([type=submit]):not([type=checkbox]):not([type=radio]),select,textarea',adminRoot).forEach((el,i)=>{
+   if(el.getAttribute('aria-label')||el.getAttribute('aria-labelledby')||el.labels?.length)return;
+   el.setAttribute('aria-label',el.getAttribute('placeholder')||labels[el.name]||el.closest('form')?.querySelector('h2,h3')?.textContent?.trim()||'فیلد فرم '+(i+1));
+  });
+  $('form',adminRoot).forEach(form=>{
+   if(form.method.toLowerCase()==='get'||form.querySelector('[name=_admin_tab]')||form.action.includes('/admin/logout'))return;
+   const panel=form.closest('[data-panel]');if(!panel)return;
+   const inp=document.createElement('input');inp.type='hidden';inp.name='_admin_tab';inp.value=panel.dataset.panel;form.appendChild(inp);
+  });
+ }
  const tabs=$('[data-tabs]'); if(tabs){const activate=k=>{$$('[data-tab]',tabs).forEach(b=>b.classList.toggle('active',b.dataset.tab===k));$$('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==k);const overview=$('.mw-admin-dashboard');if(overview)overview.hidden=k!=='dashboard';const management=$('#mw-admin-management');if(management)management.hidden=k==='dashboard';location.hash='admin-'+k};$$('[data-tab]',tabs).forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));let first=(location.hash||(document.querySelector('.mw-admin')?'#admin-dashboard':'#admin-reservations')).replace('#admin-',''); if(!$(`[data-tab="${first}"]`,tabs))first='reservations';activate(first);window.addEventListener('hashchange',()=>{const next=location.hash.replace('#admin-','');if($(`[data-tab="${next}"]`,tabs))activate(next)});$$('[data-select-tab]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();activate(el.dataset.selectTab);$('html').scrollTo({top:0,behavior:'smooth'})}));}
  const faDigits=s=>String(s).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
  const parts=d=>{const p=new Intl.DateTimeFormat('en-US-u-ca-persian',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(d);const o={};p.forEach(x=>{if(['year','month','day'].includes(x.type))o[x.type]=Number(x.value)});return o};
