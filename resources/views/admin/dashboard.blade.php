@@ -28,17 +28,7 @@ $blank=($start->dayOfWeek+1)%7;
 $daysInMonth=$jm<=6?31:($jm<=11?30:(($j->isLeapYear())?30:29));
 @endphp
 <div class="mw-admin">
-  <aside class="mw-admin-sidebar">
-    <a class="mw-admin-logo" href="{{ route('home') }}"><img src="{{ asset('assets/venue/logo.png') }}" alt="لوگوی تالار رویای ماندگار"><b>TALARTO</b><small>تالار رویای ماندگار</small></a>
-    <nav class="mw-admin-menu" data-tabs><button type="button" data-tab="dashboard"><span class="mw-menu-mark">⌂</span><span>داشبورد</span></button>
-    @foreach(['media'=>'مدیا لایبرری','reservations'=>'رزروها','calendar'=>'تقویم مراسم','visits'=>'بازدیدها','services'=>'خدمات','gallery'=>'گالری تصاویر','testimonials'=>'نظرات مشتریان','contacts'=>'پیام‌ها','settings'=>'تنظیمات','packages'=>'پکیج‌ها','menu'=>'منوی پذیرایی','posts'=>'مقالات','faqs'=>'سوالات متداول'] as $k=>$title)
-    <button type="button" data-tab="{{ $k }}"><span class="mw-menu-mark">{{ ['media'=>'▧','reservations'=>'▦','calendar'=>'▤','visits'=>'◷','services'=>'♧','gallery'=>'▧','testimonials'=>'☆','contacts'=>'☏','settings'=>'⚙','packages'=>'◇','menu'=>'♙','posts'=>'▣','faqs'=>'؟'][$k] }}</span><span>{{ $title }}</span></button>
-    @endforeach
-    <a class="mw-admin-commerce" href="{{ route('admin.commerce') }}">◈ &nbsp; امور مالی و قیمت‌گذاری</a>
-    <a class="mw-admin-customer" href="{{ route('home') }}">⌂ &nbsp; مشاهده وب‌سایت</a>
-    </nav>
-    <div class="mw-admin-sidebar-footer"><span>هر مراسم،</span><b>یک داستان ماندگار...</b><div>♡</div></div>
-  </aside>
+  @include('admin.partials.sidebar')
   <main class="mw-admin-main">
     <div class="mw-admin-toolbar">
       <div class="mw-admin-welcome"><span class="mw-admin-wave">👋</span><b>سلام، مدیر عزیز</b><small>روز خوبی برای خلق خاطره‌های ماندگار است ...</small></div>
