@@ -1,6 +1,6 @@
 <?php
 namespace App\Providers;
-use App\Models\{CalendarDate,CalendarHold,Reservation,SiteSetting};
+use App\Models\{CalendarDate,CalendarHold,CalendarOccupancy,Reservation,SiteSetting};
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider {
@@ -15,6 +15,7 @@ class AppServiceProvider extends ServiceProvider {
     if(!$reservation->confirmed_at)$reservation->updateQuietly(['confirmed_at'=>now(),'hold_expires_at'=>null]);
    }
    if($reservation->status==='cancelled'){
+    CalendarOccupancy::where('reservation_id',$reservation->id)->delete();
     CalendarHold::where('reservation_id',$reservation->id)->delete();
     CalendarDate::whereDate('date',$reservation->event_date)->where('note','رزرو تایید شده #'.$reservation->id)->delete();
     $reservation->updateQuietly(['hold_expires_at'=>null]);

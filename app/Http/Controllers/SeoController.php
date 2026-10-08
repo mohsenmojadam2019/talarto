@@ -8,5 +8,5 @@ class SeoController extends Controller {
   foreach(Post::whereNotNull('published_at')->get() as $p)$urls[]=route('blog.show',$p);
   $xml=view('seo.sitemap',compact('urls'))->render(); return response($xml,200,['Content-Type'=>'application/xml; charset=UTF-8']);
  }
- public function robots(){return response("User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ".route('sitemap')."\n",200,['Content-Type'=>'text/plain']);}
+ public function robots(){return response("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /account\nDisallow: /login\nDisallow: /register\nDisallow: /reservation\nSitemap: ".route('sitemap')."\n",200,['Content-Type'=>'text/plain']);}
 }

@@ -4,6 +4,5 @@ return [
  'url'=>env('APP_URL','http://localhost'), 'timezone'=>env('APP_TIMEZONE','Asia/Tehran'), 'locale'=>env('APP_LOCALE','fa'),
  'fallback_locale'=>env('APP_FALLBACK_LOCALE','fa'), 'faker_locale'=>env('APP_FAKER_LOCALE','fa_IR'),
  'cipher'=>'AES-256-CBC', 'key'=>env('APP_KEY'), 'previous_keys'=>array_filter(explode(',', env('APP_PREVIOUS_KEYS',''))),
- 'admin_email'=>env('ADMIN_EMAIL','admin@talarto.local'), 'admin_password'=>env('ADMIN_PASSWORD','change-me-now'),
  'lead_email'=>env('LEAD_EMAIL','')
 ];

@@ -18,3 +18,7 @@ yarn-error.log
 /.idea
 /.vscode
 .DS_Store
+
+/local-backups/
+/qa-screens/
+/database/.app-key

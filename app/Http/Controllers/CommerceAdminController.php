@@ -1,26 +1,100 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Addon,Payment,PricingRule,Reservation,Package};
+
+use App\Models\{ActivityLog, Addon, Payment, PricingRule, Reservation, Package};
 use App\Services\AvailabilityService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
 class CommerceAdminController extends Controller {
- public function index(){return view('admin.commerce',['addons'=>Addon::orderBy('category')->orderBy('sort_order')->get(),'rules'=>PricingRule::with('package')->orderBy('priority')->get(),'reservations'=>Reservation::with(['user','package','latestQuote'])->latest()->take(80)->get(),'payments'=>Payment::with('reservation')->latest()->take(50)->get(),'packages'=>Package::where('active',1)->orderBy('sort_order')->get()]);}
- public function storeAddon(Request $r){$d=$r->validate(['category'=>'required|string|max:80','title'=>'required|string|max:150','description'=>'nullable|string|max:1000','pricing_type'=>'required|in:fixed,per_guest,per_table,per_hour,quantity,included','unit_price'=>'required|integer|min:0','min_quantity'=>'nullable|numeric|min:0','max_quantity'=>'nullable|numeric|min:0','sort_order'=>'nullable|integer|min:0']);Addon::create($d+['active'=>$r->boolean('active')]);return back()->with('success','خدمت جانبی اضافه شد.');}
- public function updateAddon(Request $r,Addon $addon){$d=$r->validate(['category'=>'required|string|max:80','title'=>'required|string|max:150','description'=>'nullable|string|max:1000','pricing_type'=>'required|in:fixed,per_guest,per_table,per_hour,quantity,included','unit_price'=>'required|integer|min:0','min_quantity'=>'nullable|numeric|min:0','max_quantity'=>'nullable|numeric|min:0','sort_order'=>'nullable|integer|min:0']);$addon->update($d+['active'=>$r->boolean('active')]);return back()->with('success','خدمت به‌روزرسانی شد.');}
+ public function index(){
+  return view('admin.commerce',[
+   'addons'=>Addon::orderBy('category')->orderBy('sort_order')->get(),
+   'rules'=>PricingRule::with('package')->orderBy('priority')->get(),
+   'reservations'=>Reservation::with(['user','package','latestQuote'])->latest()->paginate(30),
+   'payments'=>Payment::with('reservation')->latest()->take(50)->get(),
+   'packages'=>Package::where('active',1)->orderBy('sort_order')->get(),
+  ]);
+ }
+ public function storeAddon(Request $r){$d=$this->addonData($r);Addon::create($d+['active'=>$r->boolean('active')]);return back()->with('success','خدمت جانبی اضافه شد.');}
+ public function updateAddon(Request $r,Addon $addon){$d=$this->addonData($r);$addon->update($d+['active'=>$r->boolean('active')]);return back()->with('success','خدمت به‌روزرسانی شد.');}
+ private function addonData(Request $r):array {
+  return $r->validate(['category'=>'required|string|max:80','title'=>'required|string|max:150','description'=>'nullable|string|max:1000','pricing_type'=>'required|in:fixed,per_guest,per_table,per_hour,quantity,included','unit_price'=>'required|integer|min:0','min_quantity'=>'nullable|numeric|min:0','max_quantity'=>'nullable|numeric|gte:min_quantity','sort_order'=>'nullable|integer|min:0']);
+ }
  public function deleteAddon(Addon $addon){$addon->delete();return back()->with('success','خدمت حذف شد.');}
  public function storeRule(Request $r){$d=$this->ruleData($r);PricingRule::create($d+['active'=>$r->boolean('active')]);return back()->with('success','قانون قیمت‌گذاری ثبت شد.');}
  public function updateRule(Request $r,PricingRule $pricingRule){$pricingRule->update($this->ruleData($r)+['active'=>$r->boolean('active')]);return back()->with('success','قانون به‌روزرسانی شد.');}
  public function deleteRule(PricingRule $pricingRule){$pricingRule->delete();return back()->with('success','قانون حذف شد.');}
- public function storePayment(Request $r,Reservation $reservation){$d=$r->validate(['amount'=>'required|integer|min:1','method'=>'required|in:cash,card,transfer,gateway,manual','reference'=>'nullable|string|max:120','note'=>'nullable|string|max:500']);DB::transaction(function()use($reservation,$d){Payment::create($d+['reservation_id'=>$reservation->id,'user_id'=>$reservation->user_id,'status'=>'paid','paid_at'=>now()]);$paid=(int)$reservation->payments()->where('status','paid')->sum('amount');$status=$paid<=0?'unpaid':($paid>=$reservation->final_price?'paid':'partial');$reservation->update(['paid_amount'=>$paid,'payment_status'=>$status]);});return back()->with('success','پرداخت ثبت شد.');}
- public function confirm(Request $r,Reservation $reservation,AvailabilityService $availability){if(!$availability->available($reservation->event_date,$reservation->time_slot,$reservation->id))return back()->withErrors(['reservation'=>'تاریخ/سانس دیگر قابل تأیید نیست.']);$reservation->update(['status'=>'confirmed','confirmed_at'=>now(),'hold_expires_at'=>null]);$availability->release($reservation->id);return back()->with('success','رزرو قطعی شد.');}
-
+ public function storePayment(Request $r,Reservation $reservation){
+  $d=$r->validate(['amount'=>'required|integer|min:1','method'=>'required|in:cash,card,transfer,manual','reference'=>'nullable|string|min:3|max:120','note'=>'nullable|string|max:500']);
+  try {
+   DB::transaction(function()use($r,$reservation,$d) {
+    $res=Reservation::whereKey($reservation->id)->lockForUpdate()->firstOrFail();
+    if(!in_array($res->status,['new','contacted','confirmed'],true))$this->reject('برای رزرو لغوشده یا تمام‌شده نمی‌توان پرداخت ثبت کرد.');
+    if(!$res->quotes()->where('status','accepted')->exists())$this->reject('ابتدا مشتری باید پیش‌فاکتور فعلی را تأیید کند.');
+    $paid=(int)$res->payments()->where('status','paid')->sum('amount');
+    if((int)$d['amount']>(int)$res->final_price-$paid)$this->reject('مبلغ پرداخت از مانده قرارداد بیشتر است.');
+    if(!empty($d['reference'])&&Payment::where('method',$d['method'])->where('reference',$d['reference'])->exists())$this->reject('این شماره پیگیری قبلاً ثبت شده است.');
+    Payment::create($d+['reservation_id'=>$res->id,'user_id'=>$res->user_id,'status'=>'paid','paid_at'=>now()]);
+    $paid=(int)$res->payments()->where('status','paid')->sum('amount');
+    $res->update(['paid_amount'=>$paid,'payment_status'=>$paid===(int)$res->final_price?'paid':'partial']);
+    ActivityLog::create(['reservation_id'=>$res->id,'actor_type'=>'admin','action'=>'payment_recorded','payload'=>['amount'=>$d['amount'],'method'=>$d['method'],'reference'=>$d['reference']??null]]);
+   },3);
+  } catch(QueryException $e) { $this->reject('پرداخت تکراری یا نامعتبر است.'); }
+  return back()->with('success','پرداخت ثبت شد.');
+ }
+ public function confirm(Request $r,Reservation $reservation,AvailabilityService $availability){
+  $this->confirmable($reservation);
+  $availability->confirm($reservation);
+  ActivityLog::create(['reservation_id'=>$reservation->id,'actor_type'=>'admin','action'=>'reservation_confirmed']);
+  return back()->with('success','رزرو قطعی شد.');
+ }
  public function status(Request $r,Reservation $reservation,AvailabilityService $availability){
   $d=$r->validate(['status'=>'required|in:new,contacted,confirmed,cancelled,done','admin_note'=>'nullable|string|max:2000']);
-  if($d['status']==='confirmed'&&!$availability->available($reservation->event_date,$reservation->time_slot,$reservation->id))return back()->withErrors(['reservation'=>'این تاریخ و سانس توسط رزرو دیگری اشغال شده است.']);
-  $reservation->update($d+($d['status']==='confirmed'?['confirmed_at'=>now(),'hold_expires_at'=>null]:[]));
-  if(in_array($d['status'],['confirmed','cancelled'],true))$availability->release($reservation->id);
+  $current=$reservation->status;
+  $next=$d['status'];
+  if($next===$current) {
+   $reservation->update(['admin_note'=>$d['admin_note']??null]);
+   return back()->with('success','یادداشت رزرو ذخیره شد.');
+  }
+  $allowed=[
+   'new'=>['contacted','confirmed','cancelled'],
+   'contacted'=>['confirmed','cancelled'],
+   'confirmed'=>['done','cancelled'],
+   'cancelled'=>[],
+   'done'=>[],
+  ];
+  if(!in_array($next,$allowed[$current]??[],true))$this->reject('تغییر وضعیت انتخاب‌شده مجاز نیست.');
+  if($next==='confirmed') {
+   $this->confirmable($reservation);
+   $availability->confirm($reservation);
+   $reservation->update(['admin_note'=>$d['admin_note']??null]);
+  } elseif($next==='cancelled') {
+   if($reservation->paid_amount>0)$this->reject('ابتدا وضعیت پرداخت‌ها و استرداد وجه را به‌صورت مالی تعیین تکلیف کنید.');
+   DB::transaction(function()use($reservation,$d,$availability){
+    $reservation->update(['status'=>'cancelled','admin_note'=>$d['admin_note']??null]);
+    $availability->release($reservation->id);
+   });
+  } elseif($next==='done') {
+   if($reservation->event_date->isFuture())$this->reject('مراسم آینده را نمی‌توان برگزارشده ثبت کرد.');
+   $reservation->update(['status'=>'done','admin_note'=>$d['admin_note']??null]);
+  } else {
+   $reservation->update(['status'=>$next,'admin_note'=>$d['admin_note']??null]);
+  }
+  ActivityLog::create(['reservation_id'=>$reservation->id,'actor_type'=>'admin','action'=>'reservation_status_changed','payload'=>['previous'=>$current,'new'=>$next]]);
   return back()->with('success','وضعیت رزرو ذخیره شد.');
  }
- private function ruleData(Request $r):array{$d=$r->validate(['title'=>'required|string|max:150','direction'=>'required|in:increase,decrease','rule_type'=>'required|in:percentage,fixed','amount'=>'required|integer|min:0','start_date'=>'nullable|date','end_date'=>'nullable|date|after_or_equal:start_date','weekdays'=>'nullable|array','weekdays.*'=>'integer|min:0|max:6','package_id'=>'nullable|exists:packages,id','event_type'=>'nullable|string|max:80','time_slot'=>'nullable|in:day,night','priority'=>'nullable|integer|min:0|max:9999']);return $d;}
+ private function confirmable(Reservation $reservation):void {
+  if(!in_array($reservation->status,['new','contacted'],true))$this->reject('این رزرو قابل قطعی‌سازی نیست.');
+  if(!$reservation->latestQuote || $reservation->latestQuote->status!=='accepted')$this->reject('ابتدا آخرین پیش‌فاکتور باید توسط مشتری تأیید شود.');
+  if($reservation->paid_amount<1)$this->reject('قبل از رزرو قطعی، بیعانه باید در حساب مشتری ثبت شده باشد.');
+ }
+ private function reject(string $message):never {throw ValidationException::withMessages(['reservation'=>$message]);}
+ private function ruleData(Request $r):array{
+  $d=$r->validate(['title'=>'required|string|max:150','direction'=>'required|in:increase,decrease','rule_type'=>'required|in:percentage,fixed','amount'=>'required|integer|min:0','start_date'=>'nullable|date','end_date'=>'nullable|date|after_or_equal:start_date','weekdays'=>'nullable|array','weekdays.*'=>'integer|min:0|max:6','package_id'=>'nullable|exists:packages,id','event_type'=>'nullable|string|max:80','time_slot'=>'nullable|in:day,night','priority'=>'nullable|integer|min:0|max:9999']);
+  if($d['rule_type']==='percentage'&&$d['amount']>100)$this->reject('درصد قیمت‌گذاری باید بین صفر تا صد باشد.');
+  return $d;
+ }
 }

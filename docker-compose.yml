@@ -1,16 +1,26 @@
 services:
   app:
     build: .
+    image: talarto-app:latest
     container_name: talarto
-    ports:
-      - "8000:8000"
+    network_mode: host
+    command: ["php", "artisan", "serve", "--host=127.0.0.1", "--port=8000"]
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
+      APP_URL: http://127.0.0.1:8000
       DB_CONNECTION: sqlite
+      SEED_DEMO: "true"
     volumes:
       - talarto_storage:/app/storage
       - talarto_database:/app/database
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:8000/up')===false?1:0);"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 volumes:
   talarto_storage:
   talarto_database:

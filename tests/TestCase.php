@@ -1,20 +1,18 @@
 <?php
 namespace Tests;
+
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
-use PHPUnit\Framework\TestCase as BaseTestCase;
+
 abstract class TestCase extends BaseTestCase {
- protected $app;
- protected function setUp():void{
-  parent::setUp();
-  $this->app=require __DIR__.'/../bootstrap/app.php';
-  $this->app->make(Kernel::class)->bootstrap();
-  Artisan::call('migrate:fresh');
+ public function createApplication() {
+  $app=require __DIR__.'/../bootstrap/app.php';
+  $app->make(Kernel::class)->bootstrap();
+  return $app;
  }
- protected function tearDown():void{
-  $this->app?->flush();
-  restore_error_handler();
-  restore_exception_handler();
-  parent::tearDown();
+ protected function setUp():void {
+  parent::setUp();
+  Artisan::call('migrate:fresh');
  }
 }

@@ -8,7 +8,7 @@ class AuthController extends Controller {
  public function loginForm(){return view('auth.login');}
  public function registerForm(){return view('auth.register');}
  public function register(Request $r){
-  $d=$r->validate(['name'=>'required|string|min:2|max:120','mobile'=>['required','regex:/^09\d{9}$/','unique:users,mobile'],'password'=>'required|string|min:6|max:100|confirmed']);
+  $d=$r->validate(['name'=>'required|string|min:2|max:120','mobile'=>['required','regex:/^09\d{9}$/','unique:users,mobile'],'password'=>'required|string|min:8|max:100|confirmed']);
   $user=User::create(['name'=>$d['name'],'mobile'=>$d['mobile'],'password'=>$d['password']]);Auth::login($user,true);$r->session()->regenerate();
   return redirect()->route('account.dashboard')->with('success','حساب شما ساخته شد.');
  }

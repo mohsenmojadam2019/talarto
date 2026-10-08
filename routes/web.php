@@ -1,5 +1,5 @@
 <?php
-use App\Http\Controllers\{AdminController,AuthController,CommerceAdminController,CustomerDashboardController,CustomerReservationController,HomeController,LeadController,PageController,PricePreviewController,SeoController};
+use App\Http\Controllers\{AdminController,AuthController,AvailabilityController,CommerceAdminController,CustomerDashboardController,CustomerReservationController,HomeController,LeadController,PageController,PricePreviewController,SeoController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -11,6 +11,8 @@ Route::get('/menu', [PageController::class, 'menu'])->name('menu');
 Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
 Route::get('/calendar', [PageController::class, 'calendar'])->name('calendar');
 Route::get('/calculator', [PageController::class, 'calculator'])->name('calculator');
+Route::post('/price-preview',PricePreviewController::class)->name('public.price-preview')->middleware('throttle:30,1');
+Route::get('/availability',AvailabilityController::class)->name('availability.check')->middleware('throttle:60,1');
 Route::post('/reservation/request', [LeadController::class, 'reservation'])->name('reservation.legacy')->middleware('throttle:8,1');
 Route::post('/visit-request', [LeadController::class, 'visit'])->name('visit.store')->middleware('throttle:8,1');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
@@ -41,6 +43,7 @@ Route::middleware('auth')->group(function(){
   Route::post('/reservations',[CustomerReservationController::class,'store'])->name('reservations.store');
   Route::get('/reservations/{reservation}',[CustomerReservationController::class,'show'])->name('reservations.show');
   Route::get('/reservations/{reservation}/edit',[CustomerReservationController::class,'edit'])->name('reservations.edit');
+  Route::get('/reservations/{reservation}/quote/print',[CustomerReservationController::class,'printQuote'])->name('reservations.print-quote');
   Route::put('/reservations/{reservation}',[CustomerReservationController::class,'update'])->name('reservations.update');
   Route::post('/reservations/{reservation}/accept-quote',[CustomerReservationController::class,'acceptQuote'])->name('reservations.accept-quote');
   Route::post('/reservations/{reservation}/cancel',[CustomerReservationController::class,'cancel'])->name('reservations.cancel');
