@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function(){
 
 Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate')->middleware('throttle:5,1');
-Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['admin','admin.panel'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
     Route::get('/commerce',[CommerceAdminController::class,'index'])->name('commerce');
