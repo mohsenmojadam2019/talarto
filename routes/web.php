@@ -57,6 +57,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
     Route::get('/commerce',[CommerceAdminController::class,'index'])->name('commerce');
+    Route::get('/commerce/reservations/export',[CommerceAdminController::class,'exportReservations'])->name('commerce.reservations.export');
     Route::post('/commerce/addons',[CommerceAdminController::class,'storeAddon'])->name('commerce.addons.store');
     Route::put('/commerce/addons/{addon}',[CommerceAdminController::class,'updateAddon'])->name('commerce.addons.update');
     Route::delete('/commerce/addons/{addon}',[CommerceAdminController::class,'deleteAddon'])->name('commerce.addons.delete');

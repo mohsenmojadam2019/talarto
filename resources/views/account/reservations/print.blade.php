@@ -4,7 +4,7 @@
 <style>body{font-family:Tahoma,Arial,sans-serif;max-width:840px;margin:30px auto;padding:24px;color:#252525;line-height:1.8}header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #333;padding-bottom:18px}h1{font-size:25px}table{width:100%;border-collapse:collapse;margin-top:24px}td,th{border:1px solid #ddd;text-align:right;padding:10px}th{background:#f3f3f3}footer{margin-top:35px;border-top:1px solid #ccc;padding-top:15px;color:#666}.sum{font-size:22px;font-weight:bold}.no-print{margin-bottom:25px}@media print{body{margin:0;max-width:none}.no-print{display:none}}</style>
 </head><body>
 <div class="no-print"><button onclick="window.print()">چاپ / ذخیره PDF</button><a href="{{ route('account.reservations.show',$reservation) }}">بازگشت به رزرو</a></div>
-<header><div><h1>پیش‌فاکتور تالارتو</h1><p>شماره رزرو: {{ $reservation->tracking_code }}</p></div><div>نسخه {{ $quote->version }}<p>تاریخ صدور: {{ $quote->issued_at?->format('Y/m/d H:i') }}</p></div></header>
+<header><div><h1>پیش‌فاکتور تالارتو</h1><p>شماره رزرو: {{ $reservation->tracking_code }}</p></div><div>نسخه {{ $quote->version }}<p>تاریخ صدور: {{ \App\Support\JalaliDate::formatDateTime($quote->issued_at) }}</p></div></header>
 <p>مشتری: {{ $reservation->name }} | شماره تماس: {{ $reservation->mobile }}</p>
 <p>نوع مراسم: {{ $reservation->event_type }} | تاریخ: {{ $reservation->date_jalali }} | سانس: {{ $reservation->time_slot==='day'?'روز':'شب' }} | مهمان: {{ $reservation->guest_count }} نفر</p>
 <table><thead><tr><th>شرح</th><th>تعداد</th><th>مبلغ واحد (تومان)</th><th>جمع (تومان)</th></tr></thead><tbody>

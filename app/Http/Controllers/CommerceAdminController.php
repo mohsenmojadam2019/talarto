@@ -18,6 +18,27 @@ class CommerceAdminController extends Controller {
    'packages'=>Package::where('active',1)->orderBy('sort_order')->get(),
   ]);
  }
+ public function exportReservations(): \Symfony\Component\HttpFoundation\StreamedResponse {
+  $name='talarto-reservations-'.\Morilog\Jalali\Jalalian::now()->format('Ymd').'.csv';
+  return response()->streamDownload(function() {
+   $fp=fopen('php://output','w');
+   fwrite($fp,"\xEF\xBB\xBF");
+   fputcsv($fp,['کد رهگیری','نام مشتری','شماره موبایل','نوع مراسم','تاریخ جلالی','سانس','تعداد مهمان','مبلغ کل','مبلغ پرداخت','وضعیت']);
+   foreach(Reservation::orderByDesc('id')->limit(5000)->cursor() as $r) {
+    $safe=function($text) {
+     $text=preg_replace('/[\r\n\t]+/u',' ',(string)$text);
+     return preg_match('/^[=+\-@]/u',$text)?"'".$text:$text;
+    };
+    fputcsv($fp,[
+      $safe($r->tracking_code),$safe($r->name),$safe($r->mobile),$safe($r->event_type),
+      $r->date_jalali ?: \App\Support\JalaliDate::format($r->event_date),
+      $r->time_slot==='day'?'روز':'شب',(int)$r->guest_count,(int)$r->final_price,
+      (int)$r->paid_amount,$safe($r->status)
+    ]);
+   }
+   fclose($fp);
+  },$name,['Content-Type'=>'text/csv; charset=UTF-8']);
+ }
  public function storeAddon(Request $r){$d=$this->addonData($r);Addon::create($d+['active'=>$r->boolean('active')]);return back()->with('success','خدمت جانبی اضافه شد.');}
  public function updateAddon(Request $r,Addon $addon){$d=$this->addonData($r);$addon->update($d+['active'=>$r->boolean('active')]);return back()->with('success','خدمت به‌روزرسانی شد.');}
  private function addonData(Request $r):array {
@@ -92,9 +113,34 @@ class CommerceAdminController extends Controller {
   if($reservation->paid_amount<1)$this->reject('قبل از رزرو قطعی، بیعانه باید در حساب مشتری ثبت شده باشد.');
  }
  private function reject(string $message):never {throw ValidationException::withMessages(['reservation'=>$message]);}
- private function ruleData(Request $r):array{
-  $d=$r->validate(['title'=>'required|string|max:150','direction'=>'required|in:increase,decrease','rule_type'=>'required|in:percentage,fixed','amount'=>'required|integer|min:0','start_date'=>'nullable|date','end_date'=>'nullable|date|after_or_equal:start_date','weekdays'=>'nullable|array','weekdays.*'=>'integer|min:0|max:6','package_id'=>'nullable|exists:packages,id','event_type'=>'nullable|string|max:80','time_slot'=>'nullable|in:day,night','priority'=>'nullable|integer|min:0|max:9999']);
-  if($d['rule_type']==='percentage'&&$d['amount']>100)$this->reject('درصد قیمت‌گذاری باید بین صفر تا صد باشد.');
+ private function ruleData(Request $r):array {
+  $r->merge([
+   'start_date_jalali'=>($startInput=\App\Support\JalaliDate::normalize($r->input('start_date_jalali'))) !== '' ? $startInput : null,
+   'end_date_jalali'=>($endInput=\App\Support\JalaliDate::normalize($r->input('end_date_jalali'))) !== '' ? $endInput : null,
+  ]);
+  $d=$r->validate([
+   'title'=>'required|string|max:150',
+   'direction'=>'required|in:increase,decrease','rule_type'=>'required|in:percentage,fixed',
+   'amount'=>'required|integer|min:0',
+   'start_date_jalali'=>['nullable','regex:/^1[34]\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/'],
+   'end_date_jalali'=>['nullable','regex:/^1[34]\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/'],
+   'weekdays'=>'nullable|array','weekdays.*'=>'integer|min:0|max:6',
+   'package_id'=>'nullable|exists:packages,id','event_type'=>'nullable|string|max:80',
+   'time_slot'=>'nullable|in:day,night','priority'=>'nullable|integer|min:0|max:9999'
+  ]);
+  if($d['rule_type']==='percentage' && $d['amount']>100)$this->reject('درصد قیمت‌گذاری باید بین صفر تا صد باشد.');
+  try {
+   $start=empty($d['start_date_jalali'])?null:\App\Support\JalaliDate::toCarbon($d['start_date_jalali']);
+   $end=empty($d['end_date_jalali'])?null:\App\Support\JalaliDate::toCarbon($d['end_date_jalali']);
+  }catch(\Throwable) {
+   throw ValidationException::withMessages(['start_date_jalali'=>'تاریخ شمسی معتبر نیست.']);
+  }
+  if($start && $end && $end->lessThan($start)){
+   throw ValidationException::withMessages(['end_date_jalali'=>'پایان بازه باید برابر یا بعد از شروع بازه باشد.']);
+  }
+  unset($d['start_date_jalali'],$d['end_date_jalali']);
+  $d['start_date']=$start?->toDateString();
+  $d['end_date']=$end?->toDateString();
   return $d;
  }
 }

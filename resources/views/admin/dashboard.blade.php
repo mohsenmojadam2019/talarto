@@ -3,13 +3,25 @@
 @section('content')
 @php
 $upcoming=$reservations->filter(fn($r)=>$r->event_date && $r->event_date->greaterThanOrEqualTo(today()) && !in_array($r->status,['cancelled','done']))->sortBy('event_date');
-$monthKey=\Morilog\Jalali\Jalalian::now()->format('Y/m');
-$paidTotal=\App\Models\Payment::where('status','paid')->whereMonth('paid_at',now()->month)->whereYear('paid_at',now()->year)->sum('amount');
+$j=\Morilog\Jalali\Jalalian::now();
+$jalaliMonthStart=\Morilog\Jalali\Jalalian::fromFormat('Y/m/d',sprintf('%04d/%02d/01',$j->getYear(),$j->getMonth()))->toCarbon();
+$nextYear=$j->getMonth()===12?$j->getYear()+1:$j->getYear();
+$nextMonth=$j->getMonth()===12?1:$j->getMonth()+1;
+$nextJalaliMonth=\Morilog\Jalali\Jalalian::fromFormat('Y/m/d',sprintf('%04d/%02d/01',$nextYear,$nextMonth))->toCarbon();
+$paidTotal=\App\Models\Payment::where('status','paid')->where('paid_at','>=',$jalaliMonthStart)->where('paid_at','<',$nextJalaliMonth)->sum('amount');
 $reviewCount=\App\Models\Testimonial::where('status','approved')->count();
 $ratingAverage=$reviewCount ? round(\App\Models\Testimonial::where('status','approved')->avg('rating')*20) : null;
 $months=[];$maxBar=1;
-for($i=8;$i>=0;$i--){$start=now()->startOfMonth()->subMonths($i);$n=\App\Models\Reservation::whereYear('created_at',$start->year)->whereMonth('created_at',$start->month)->count();$months[]=['name'=>\Morilog\Jalali\Jalalian::fromDateTime($start)->format('F'),'total'=>$n];$maxBar=max($maxBar,$n);}
-$j=\Morilog\Jalali\Jalalian::now();
+for($i=8;$i>=0;$i--){
+ $serial=$j->getYear()*12+$j->getMonth()-1-$i;
+ $year=intdiv($serial,12);$month=$serial%12+1;
+ $startJ=\Morilog\Jalali\Jalalian::fromFormat('Y/m/d',sprintf('%04d/%02d/01',$year,$month));
+ $endYear=$month===12?$year+1:$year;$endMonth=$month===12?1:$month+1;
+ $endJ=\Morilog\Jalali\Jalalian::fromFormat('Y/m/d',sprintf('%04d/%02d/01',$endYear,$endMonth));
+ $n=\App\Models\Reservation::where('created_at','>=',$startJ->toCarbon())->where('created_at','<',$endJ->toCarbon())->count();
+ $months[]=['name'=>$startJ->format('F'),'total'=>$n];
+ $maxBar=max($maxBar,$n);
+}
 $jm=$j->getMonth();$jy=$j->getYear();
 $start=\Morilog\Jalali\Jalalian::fromFormat('Y/m/d',sprintf('%04d/%02d/01',$jy,$jm))->toCarbon();
 $blank=($start->dayOfWeek+1)%7;
@@ -78,7 +90,7 @@ $daysInMonth=$jm<=6?31:($jm<=11?30:(($j->isLeapYear())?30:29));
       @forelse($contacts->take(5) as $m)<div class="mw-message-row" data-admin-item><div class="mw-message-avatar">{{ mb_substr($m->name,0,1) }}</div><div><b>{{ $m->name }}</b><p>{{ Str::limit($m->message,70) }}</p></div><small>{{ optional($m->created_at)->format('H:i') }}</small></div>
       @empty <p class="mw-empty-note">پیام جدیدی ثبت نشده است.</p>@endforelse
       </div>
-      <div class="mw-admin-recent mw-admin-widget"><h2>▦ &nbsp; آخرین رزروها</h2><div class="table-wrap"><table><thead><tr><th>مشتری</th><th>مراسم</th><th>تاریخ</th><th>ظرفیت</th><th>وضعیت</th></tr></thead><tbody>
+      <div class="mw-admin-recent mw-admin-widget"><h2>▦ &nbsp; آخرین رزروها</h2><a class="mw-widget-action" href="{{ route('admin.commerce.reservations.export') }}">خروجی CSV ↓</a><div class="table-wrap"><table><thead><tr><th>مشتری</th><th>مراسم</th><th>تاریخ</th><th>ظرفیت</th><th>وضعیت</th></tr></thead><tbody>
         @forelse($reservations->take(5) as $r)<tr data-admin-item><td>{{ $r->name }}</td><td>{{ $r->event_type }}</td><td>{{ $r->date_jalali }}</td><td>{{ $r->guest_count }}</td><td><span class="status-pill status-{{ $r->status }}">{{ ['new'=>'جدید','contacted'=>'پیگیری','confirmed'=>'قطعی','cancelled'=>'لغو','done'=>'انجام شده'][$r->status]??$r->status }}</span></td></tr>
         @empty <tr><td colspan="5">رزروی ثبت نشده است.</td></tr> @endforelse
       </tbody></table></div><a href="#admin-reservations" class="mw-widget-action" data-select-tab="reservations">مدیریت رزروها ←</a></div>

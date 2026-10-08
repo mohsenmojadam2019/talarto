@@ -1,0 +1,84 @@
+/* Talarto RTL form system: single-venue website, admin commerce, customer portal */
+:root{--form-gold:#b78a49;--form-ink:#20263b;--form-line:#e8decf;--form-shadow:0 10px 38px #765b3612}
+html{scroll-padding-top:86px}body{overflow-x:clip}*,*::before,*::after{box-sizing:border-box}
+:where(.auth-card,.login-card,.booking-form,.main-form,.visit-box,.commerce-section,.admin-panel,.account-area .panel-card,.mw-review-form form,.mw-media-upload){border-radius:20px;box-shadow:var(--form-shadow)}
+:where(.auth-card,.login-card,.booking-form,.main-form,.visit-box,.commerce-section,.admin-panel,.mw-media-upload) :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea),
+:where(.account-area,.auth-section,.admin-form,.booking-builder,.commerce-section) :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea){
+  min-width:0;max-width:100%;min-height:45px;border:1px solid var(--form-line);border-radius:12px;background:#fffdfa;
+  padding:11px 13px;color:var(--form-ink);font-size:13px;transition:border-color .15s,background .15s,box-shadow .15s;
+}
+:where(input:not([type=checkbox]):not([type=radio]),select,textarea):focus-visible{
+ outline:2px solid #cfae7b;outline-offset:1px;border-color:#b8863b!important;box-shadow:0 0 0 4px #cda66d17;
+}
+:where(input,select,textarea)::placeholder{color:#aaa19a;font-size:12px}
+:where(input,select,textarea):disabled{cursor:not-allowed;background:#f6f3ef;opacity:.68}
+:where(input[type=checkbox],input[type=radio]){accent-color:#a97b38;cursor:pointer;min-height:auto!important}
+:where(label){overflow-wrap:anywhere}
+:where(.auth-card,.booking-form,.commerce-form,.admin-form,.visit-box form,.mw-media-upload,.mw-review-form form) label{font-size:12px;font-weight:700;color:#555061;line-height:2}
+:where(.auth-card,.booking-form,.commerce-form,.admin-form,.visit-box form,.mw-media-upload,.mw-review-form form) label :where(input,select,textarea){display:block;width:100%;margin-top:4px}
+:where(.auth-card,.booking-form,.commerce-form,.admin-form,.visit-box form,.mw-media-upload,.mw-review-form form) label.inline-check input,
+:where(.auth-card,.booking-form,.commerce-form,.admin-form,.visit-box form,.mw-media-upload,.mw-review-form form) label.check input{display:inline-block;width:auto}
+:where(textarea){resize:vertical;min-height:80px}
+:where(.btn,.mw-gold-button,.mw-header-reserve,.mw-outline-button,.mw-pill-link,.mw-media-actions button){transition:transform .16s,box-shadow .16s,filter .16s}
+:where(.btn,.mw-gold-button,.mw-header-reserve,.mw-outline-button,.mw-pill-link,.mw-media-actions button):focus-visible{outline:3px solid #bc8c44;outline-offset:3px}
+:where(button):disabled{opacity:.6;cursor:not-allowed}
+.auth-section{background:radial-gradient(circle at 10% 12%,#f5e5cf,#fffcf8 45%,#fff 92%);padding:65px 15px}
+.auth-shell{display:grid;grid-template-columns:1fr 1fr;gap:min(7vw,60px);align-items:center;width:min(1070px,100%);margin:0 auto}
+.auth-copy{min-width:0}.auth-copy h1{font-size:clamp(26px,3.4vw,46px);line-height:1.55;color:#24283b}
+.auth-card{background:#fff;border:1px solid #e8dbc8;padding:clamp(21px,3vw,35px)}
+.auth-card h2{color:#1f2335}.auth-card label{display:block;margin:12px 0}
+.auth-switch a{color:#96713c}
+.login-card{border:1px solid #e8dbc8;background:#fffdf9}
+.booking-builder{padding:35px 0 65px;background:#faf6f1}
+.booking-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:20px;align-items:start}
+.booking-form,.form-section{min-width:0}.form-section{margin-bottom:18px;border-radius:19px;background:#fff;border:1px solid #eadfd0;padding:clamp(16px,2vw,25px)}
+.form-section-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}.form-section-head>span{border:1px solid #e0c39a;background:#fbf2e5;color:#a17539;padding:7px 12px;border-radius:13px;font-weight:800}
+.form-section-head h2{font-size:19px;margin:0}.form-section-head p{font-size:12px;margin:0;color:#82766c}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.choice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.choice-card{min-width:0;border-radius:15px;border:1px solid #e4d9c8;background:#fffefa;cursor:pointer}
+.choice-card:has(input:checked){border-color:#b78646;background:#fff7e9;box-shadow:0 0 0 3px #d9b7802a}
+.booking-steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;padding:8px;border:1px solid #e8dbc9;border-radius:15px;background:#fffcf6}
+.booking-steps a{display:flex;align-items:center;gap:6px;border-radius:10px;padding:7px 12px;font-size:11px;color:#665b4e;background:white;border:1px solid #eee1cf}
+.booking-steps a:hover{color:#93652d;border-color:#bc995f}
+.booking-steps a b{font-size:11px;background:#f8edde;border-radius:50%;padding:0 6px;color:#a8783f}
+.date-input-wrap{display:block;position:relative;min-width:0}
+.date-input-wrap>.jalali-input{width:100%;padding-inline-end:30px}
+.date-clear{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);border:0;border-radius:8px;background:#fff5e6;color:#926b3b;line-height:1;width:25px;height:25px;font-size:17px}
+.jalali-input{cursor:pointer!important;direction:ltr;text-align:center;font-variant-numeric:tabular-nums}
+.jp-day:disabled{opacity:.32;cursor:not-allowed}
+.availability-hint{display:flex;align-items:center;min-height:45px;color:#93692c;background:#fff9ec;border:1px dashed #e1cba5;border-radius:12px;padding:7px 10px;font-size:11px}
+.admin-form,.commerce-form{gap:11px}
+.commerce-section{background:#fff;border:1px solid #eae0d2;padding:clamp(15px,2vw,25px);min-width:0}
+.commerce-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.commerce-form>*{min-width:0}
+.commerce-form textarea.span2,.commerce-form button.span2,.commerce-form .span2{grid-column:1/-1}
+.admin-panel{min-width:0}
+.admin-panel .row-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));align-items:end;gap:9px}
+.admin-panel :where(.edit-card,.commerce-item){border-radius:14px;border:1px solid #e7dece;background:#fffdf9;margin-bottom:9px;overflow:hidden}
+.admin-panel :where(.edit-card,.commerce-item) summary{padding:12px;cursor:pointer;font-weight:800}
+.table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-color:#d5b989 #fbf7f0;border-radius:14px}
+.table-wrap table{width:100%;min-width:620px;white-space:normal}
+.table-wrap :where(td,th){padding:9px 11px;vertical-align:middle}
+.table-wrap td :where(input,select){min-width:115px}
+.table-wrap th{background:#f9f4ec;color:#564737}
+.inline-form{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.inline-form>*{flex:1 1 135px}
+.password-control{display:flex;position:relative;align-items:center;min-width:0}.password-control input{width:100%;padding-inline-end:70px!important}.password-visibility{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);border:0;border-radius:8px;background:#f3e9d9;padding:5px 9px;font-size:11px;color:#816033;line-height:1.7}
+.form-feedback{font-size:11px;color:#956927;margin-top:5px}
+.form-counter{font-size:10px;display:block;color:#8c7b68;text-align:left}
+.form-processing{opacity:.68;pointer-events:none}
+.reservation-list-search,.commerce-list-search{display:flex;align-items:center;gap:9px;max-width:380px;border:1px solid #dfcdb7;border-radius:13px;padding:6px 10px;background:#fff;margin:0 0 15px}
+.reservation-list-search input,.commerce-list-search input{flex:1;min-width:0;border:0!important;box-shadow:none!important;padding:6px!important;background:transparent!important}
+.reservation-list-search button,.commerce-list-search button{border:0;background:#f1e6d6;color:#8e6839;border-radius:9px;padding:7px 10px}
+.search-result-count{font-size:11px;color:#8c7350;margin:5px 0 12px}
+.mw-admin-search{min-width:165px}
+.account-area,.account-head{min-width:0}
+.account-head .container,.head-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.account-grid,.reservation-detail{min-width:0}
+.account-grid>*{min-width:0}
+.reservation-card{border:1px solid #e5d8c4;border-radius:16px;background:#fff;box-shadow:var(--form-shadow);padding:18px;margin-bottom:12px}
+@media(max-width:1100px){.booking-layout{grid-template-columns:minmax(0,1.4fr) minmax(230px,.8fr)}.mw-admin-main{padding:14px}.commerce-section{padding:16px}}
+@media(max-width:780px){.auth-shell{grid-template-columns:1fr;max-width:550px;gap:18px}.auth-copy h1{font-size:30px}.booking-layout{grid-template-columns:1fr}.booking-layout>*{min-width:0}.booking-layout aside{position:static!important}.account-grid,.reservation-detail{grid-template-columns:1fr!important}.commerce-form{grid-template-columns:repeat(2,minmax(0,1fr))}.mw-admin-toolbar{flex-wrap:wrap}}
+@media(max-width:520px){.auth-section{padding:25px 10px}.auth-card{padding:20px}.auth-copy h1{font-size:27px}.grid2,.commerce-form{grid-template-columns:1fr}.commerce-form>.span2{grid-column:auto}.form-section{padding:15px}.booking-steps{flex-wrap:nowrap;overflow-x:auto}.booking-steps a{white-space:nowrap}.mw-review-form form .grid2{grid-template-columns:1fr}.account-head .container{display:flex;gap:10px}.head-actions{width:100%}.admin-panel{padding:12px!important}.reservation-card{flex-wrap:wrap;gap:10px}.reservation-card-meta{width:100%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.mw-media-form-grid{grid-template-columns:1fr}.table-wrap table{min-width:570px}button,.btn{touch-action:manipulation}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}

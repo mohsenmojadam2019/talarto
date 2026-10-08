@@ -5,4 +5,7 @@ final class JalaliDate {
  public static function normalize(?string $value):string { return strtr((string)$value,['۰'=>'0','۱'=>'1','۲'=>'2','۳'=>'3','۴'=>'4','۵'=>'5','۶'=>'6','۷'=>'7','۸'=>'8','۹'=>'9','٠'=>'0','١'=>'1','٢'=>'2','٣'=>'3','٤'=>'4','٥'=>'5','٦'=>'6','٧'=>'7','٨'=>'8','٩'=>'9','-'=>'/','.'=>'/']); }
  public static function toCarbon(string $value):Carbon { return Jalalian::fromFormat('Y/m/d', self::normalize($value))->toCarbon()->startOfDay(); }
  public static function format($value):string { return $value ? Jalalian::fromDateTime($value)->format('Y/m/d') : ''; }
+ public static function formatDateTime($value):string { return $value ? Jalalian::fromDateTime($value)->format('Y/m/d H:i') : ''; }
+ public static function display(?string $value):string { return strtr((string)$value, array_combine(str_split('0123456789'),preg_split('//u','۰۱۲۳۴۵۶۷۸۹',-1,PREG_SPLIT_NO_EMPTY))); }
+
 }
