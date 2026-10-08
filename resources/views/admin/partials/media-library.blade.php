@@ -10,7 +10,7 @@
     <form method="post" action="{{ route('admin.media.import') }}" enctype="multipart/form-data" class="mw-media-upload">@csrf
       <h3>ورود بسته عکس ZIP</h3><label>انتخاب ZIP<input type="file" name="archive" accept=".zip,application/zip" required></label>
       <label>دسته‌بندی<select name="category" required>@foreach(['سالن عروسی','تولد','عقد','نامزدی','پذیرایی و غذا','دکوراسیون','محوطه'] as $category)<option value="{{ $category }}">{{ $category }}</option>@endforeach</select></label>
-      <label class="check"><input type="checkbox" name="replace_demo" value="1" checked> جایگزین‌کردن تصاویر نمونه فعلی و تغییر بنر</label><p>حداکثر ۲۰ تصویر. تصاویر تولیدشده صرفاً نمونه طراحی هستند و نباید به‌عنوان عکس واقعی مجموعه معرفی شوند.</p><button class="btn" type="submit">ورود ZIP</button>
+      <label class="check"><input type="checkbox" name="replace_demo" value="1"> جایگزین‌کردن تصاویر نمونه فعلی و تغییر بنر</label><p>حداکثر ۲۰ تصویر. تصاویر تولیدشده صرفاً نمونه طراحی هستند و نباید به‌عنوان عکس واقعی مجموعه معرفی شوند.</p><button class="btn" type="submit">ورود ZIP</button>
     </form>
   </div>
   <div class="mw-media-cards">
